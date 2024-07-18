@@ -1,4 +1,4 @@
-package cottontex.graphdep;
+package cottontex.graphdep.loggerUtility;
 
 
 import org.apache.logging.log4j.LogManager;
