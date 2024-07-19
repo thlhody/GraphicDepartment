@@ -1,31 +1,20 @@
 package cottontex.graphdep;
 
-import cottontex.graphdep.loggerUtility.LoggerUtility;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import cottontex.graphdep.views.BasePage;
 
-import java.io.IOException;
-
-public class Launcher extends Application {
+public class Launcher extends BasePage {
 
     @Override
-    public void start(Stage stage) {
+    protected String getFxmlPath() {
+        return "/cottontex/graphdep/fxml/launcher.fxml";
+    }
 
-        FXMLLoader fxmlLoader = new FXMLLoader(Launcher.class.getResource("/cottontex/graphdep/launcher.fxml"));
-
-        try {
-            Scene scene = new Scene(fxmlLoader.load(), 1000, 1000);
-            stage.setTitle("Graphic Department Login");
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            LoggerUtility.errorInfo(e.getMessage());
-        }
+    @Override
+    protected String getTitle() {
+        return "Graphic Department Login";
     }
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }
