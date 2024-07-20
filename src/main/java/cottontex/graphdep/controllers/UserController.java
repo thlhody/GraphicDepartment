@@ -3,11 +3,15 @@ package cottontex.graphdep.controllers;
 import cottontex.graphdep.database.queries.ScheduleUserTable;
 import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import jfxtras.scene.control.LocalTimePicker;
 import lombok.Setter;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -24,8 +28,10 @@ public class UserController extends BaseController {
     @FXML private Button pauseButton;
     @FXML private Button endButton;
     @FXML private Button logoutButton;
+    @FXML private Button myAccountButton;
 
     private ScheduleUserTable scheduleUserTable = new ScheduleUserTable();
+    private String currentUsername;
 
     @Setter private Integer userID;
 
@@ -36,7 +42,7 @@ public class UserController extends BaseController {
 
     @FXML
     protected void onLogoutButtonClick() {
-        loadPage((Stage) logoutButton.getScene().getWindow(), "/cottontex/graphdep/fxml/launcher.fxml", "Graphics Department Login");
+        loadPage((Stage) logoutButton.getScene().getWindow(), "/cottontex/graphdep/fxml/LauncherLayout.fxml", "Graphics Department Login");
     }
 
     @FXML
@@ -106,5 +112,23 @@ public class UserController extends BaseController {
         alert.setContentText("Are you sure you want to pause your current work?");
         Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.OK;
+    }
+
+    @FXML
+    protected void onMyAccountButtonClick() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cottontex/graphdep/fxml/SettingsUserLayout.fxml"));
+            Parent root = loader.load();
+
+            SettingsUserController settingsController = loader.getController();
+            settingsController.setUserID(userID);
+
+            Stage stage = (Stage) myAccountButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("My Account");
+        } catch (IOException e) {
+            LoggerUtility.error("Error loading My Account page", e);
+            // Show an error message to the user
+        }
     }
 }

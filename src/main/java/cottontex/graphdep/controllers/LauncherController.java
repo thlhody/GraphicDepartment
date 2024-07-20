@@ -27,7 +27,7 @@ public class LauncherController extends BaseController {
         if (role != null) {
             Integer userID = userLogin.getUserID(username);
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            String fxmlPath = role.equals("ADMIN") ? "/cottontex/graphdep/fxml/adminPage.fxml" : "/cottontex/graphdep/fxml/userPage.fxml";
+            String fxmlPath = role.equals("ADMIN") ? "/cottontex/graphdep/fxml/AdminPageLayout.fxml" : "/cottontex/graphdep/fxml/UserPageLayout.fxml";
             String title = role.equals("ADMIN") ? "Admin Page" : "User Page";
 
             FXMLLoader loader = loadPage(stage, fxmlPath, title);

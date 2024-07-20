@@ -4,7 +4,7 @@ public class AdminPage extends BasePage {
 
     @Override
     protected String getFxmlPath() {
-        return "adminPage.fxml";
+        return "AdminPageLayout.fxml";
     }
 
     @Override

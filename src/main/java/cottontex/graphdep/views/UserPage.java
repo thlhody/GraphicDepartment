@@ -4,7 +4,7 @@ public class UserPage extends BasePage {
 
     @Override
     protected String getFxmlPath() {
-        return "userPage.fxml";
+        return "UserPageLayout.fxml";
     }
 
     @Override

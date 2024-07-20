@@ -1,21 +1,24 @@
 package cottontex.graphdep.controllers;
 
-import cottontex.graphdep.database.queries.AdminScheduleHandler;
-import cottontex.graphdep.database.queries.UserManagementHandler;
-import cottontex.graphdep.models.WorkScheduleEntry;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import cottontex.graphdep.database.queries.UserStatusHandler;
+import cottontex.graphdep.models.UserStatus;
+import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.FileChooser;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import lombok.Setter;
 
-import java.io.File;
-import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
+import java.util.Objects;
 
 public class AdminController extends BaseController {
 
@@ -26,128 +29,39 @@ public class AdminController extends BaseController {
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private Button addUserButton;
-    @FXML private Button exportToExcelButton;
-    @FXML private ComboBox<Integer> yearComboBox;
-    @FXML private ComboBox<Integer> monthComboBox;
-    @FXML private TableView<WorkScheduleEntry> scheduleTable;
+    @FXML private VBox userStatusBox;
+    @FXML private Button settingsButton;
 
     @Setter private Integer userID;
     private String username;
 
-    private AdminScheduleHandler adminScheduleHandler = new AdminScheduleHandler();
-    private UserManagementHandler userManagementHandler = new UserManagementHandler();
+    private UserStatusHandler userStatusHandler = new UserStatusHandler();
 
-    @FXML
-    public void initialize() {
-        initializeComboBoxes();
-        setupTableColumns();
-    }
 
     public void setUsername(String username) {
         this.username = username;
         welcomeLabel.setText("Welcome, " + username + "!");
     }
-
     @FXML
-    protected void onViewWorkDataButtonClick() {
-        int selectedYear = yearComboBox.getValue();
-        int selectedMonth = monthComboBox.getValue();
-
-        Map<String, Map<Integer, String>> data = adminScheduleHandler.getMonthlyWorkData(selectedYear, selectedMonth);
-        ObservableList<WorkScheduleEntry> entries = createWorkScheduleEntries(data);
-        scheduleTable.setItems(entries);
+    public void initialize(){
+        populateUserStatusBox();
     }
 
     @FXML
-    protected void onAddUserButtonClick() {
-        String name = nameField.getText().trim();
-        String username = usernameField.getText().trim();
-        String password = passwordField.getText().trim();
-
-        if (name.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            showAlert("Error", "All fields must be filled.");
-            return;
-        }
-
-        boolean success = userManagementHandler.addUser(name, username, password);
-        if (success) {
-            showAlert("Success", "User added successfully.");
-            clearFields();
-        } else {
-            showAlert("Error", "Failed to add user. Username already exist.");
-        }
+    protected void onViewMonthlyTimeClick() {
+        loadPage((Stage) logoutButton.getScene().getWindow(), "/cottontex/graphdep/fxml/AdminMonthlyTimeLayout.fxml", "Monthly Time View");
     }
-
+    @FXML
+    protected void onSettingsButtonClick() {
+        loadPage((Stage) settingsButton.getScene().getWindow(), "/cottontex/graphdep/fxml/SettingsAdminLayout.fxml", "Settings");
+    }
     @FXML
     protected void onLogoutAdminButtonClick() {
-        loadPage((Stage) logoutButton.getScene().getWindow(), "/cottontex/graphdep/fxml/launcher.fxml", "Graphics Department Login");
+        loadPage((Stage) logoutButton.getScene().getWindow(), "/cottontex/graphdep/fxml/LauncherLayout.fxml", "Graphics Department Login");
     }
 
-    @FXML
-    protected void onExportToExcelButtonClick() {
-        int selectedYear = yearComboBox.getValue();
-        int selectedMonth = monthComboBox.getValue();
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Excel File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
-        fileChooser.setInitialFileName("WorkSchedule_" + selectedYear + "_" + selectedMonth + ".xlsx");
-
-        File file = fileChooser.showSaveDialog(exportToExcelButton.getScene().getWindow());
-        if (file != null) {
-            adminScheduleHandler.exportToExcel(selectedYear, selectedMonth, file.getAbsolutePath());
-            showAlert("Success", "Excel file exported successfully.");
-        }
-    }
-
-    private void initializeComboBoxes() {
-        yearComboBox.getItems().addAll(2023, 2024, 2025);
-        yearComboBox.setValue(LocalDate.now().getYear());
-
-        for (int i = 1; i <= 12; i++) {
-            monthComboBox.getItems().add(i);
-        }
-        monthComboBox.setValue(LocalDate.now().getMonthValue());
-    }
-
-    private void setupTableColumns() {
-        TableColumn<WorkScheduleEntry, String> nameColumn = new TableColumn<>("Name");
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        scheduleTable.getColumns().add(nameColumn);
-
-        for (int day = 1; day <= 31; day++) {
-            final int currentDay = day;
-            TableColumn<WorkScheduleEntry, String> dayColumn = new TableColumn<>(String.valueOf(day));
-            dayColumn.setCellValueFactory(cellData ->
-                    new SimpleStringProperty(cellData.getValue().getDay(currentDay)));
-            scheduleTable.getColumns().add(dayColumn);
-        }
-
-        TableColumn<WorkScheduleEntry, String> totalColumn = new TableColumn<>("Total");
-        totalColumn.setCellValueFactory(new PropertyValueFactory<>("total"));
-        scheduleTable.getColumns().add(totalColumn);
-    }
-
-    private ObservableList<WorkScheduleEntry> createWorkScheduleEntries(Map<String, Map<Integer, String>> data) {
-        ObservableList<WorkScheduleEntry> entries = FXCollections.observableArrayList();
-        for (Map.Entry<String, Map<Integer, String>> entry : data.entrySet()) {
-            String name = entry.getKey();
-            Map<Integer, String> dailyData = entry.getValue();
-
-            int totalMinutes = calculateTotalMinutes(dailyData);
-            String total = String.format("%d:%02d", totalMinutes / 60, totalMinutes % 60);
-
-            entries.add(new WorkScheduleEntry(name, dailyData, total));
-        }
-        return entries;
-    }
-
-    private int calculateTotalMinutes(Map<Integer, String> dailyData) {
-        return dailyData.values().stream()
-                .mapToInt(s -> {
-                    String[] parts = s.split(":");
-                    return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
-                }).sum();
+    private void refreshUserStatus() {
+        populateUserStatusBox();
     }
 
     private void clearFields() {
@@ -155,4 +69,59 @@ public class AdminController extends BaseController {
         usernameField.clear();
         passwordField.clear();
     }
+
+    private void populateUserStatusBox() {
+        if (userStatusBox == null) {
+            LoggerUtility.error("userStatusBox is null in populateUserStatusBox method");
+            return;
+        }
+
+        List<UserStatus> userStatuses = userStatusHandler.getUserStatuses();
+        userStatusBox.getChildren().clear();
+
+        setupUserStatusHeader(); // This will add the header to the userStatusBox
+
+        for (UserStatus status : userStatuses) {
+            HBox userRow = createUserStatusRow(status);
+            userStatusBox.getChildren().add(userRow);
+        }
+    }
+
+    private HBox createUserStatusRow(UserStatus status) {
+        HBox userRow = new HBox(10);
+        userRow.setAlignment(Pos.CENTER_LEFT);
+        userRow.setStyle("-fx-background-color: #e8f5e9; -fx-padding: 5; -fx-background-radius: 5;");
+
+        Label nameLabel = new Label(status.getUsername());
+        nameLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
+        nameLabel.setTextFill(Color.web("#2e7d32"));
+
+        Label timeLabel = new Label(status.getStartTime() + " - " + status.getEndTime());
+        timeLabel.setFont(Font.font("System", 12));
+        timeLabel.setTextFill(Color.web("#1b5e20"));
+
+        userRow.getChildren().addAll(nameLabel, timeLabel);
+        return userRow;
+    }
+    private void setupUserStatusHeader() {
+        HBox headerBox = new HBox(10);
+        headerBox.setAlignment(Pos.CENTER_LEFT);
+
+        Label header = new Label("User Status");
+        header.setFont(Font.font("System", FontWeight.BOLD, 16));
+
+        Button refreshButton = new Button("Refresh");
+        refreshButton.setOnAction(e -> refreshUserStatus());
+
+        headerBox.getChildren().addAll(header, refreshButton);
+
+        // Check if userStatusBox is not null before adding the header
+        if (userStatusBox != null) {
+            userStatusBox.getChildren().add(0, headerBox);
+        } else {
+            LoggerUtility.error("userStatusBox is null in setupUserStatusHeader method");
+        }
+    }
+
+
 }

@@ -6,7 +6,7 @@ public class Launcher extends BasePage {
 
     @Override
     protected String getFxmlPath() {
-        return "/cottontex/graphdep/fxml/launcher.fxml";
+        return "/cottontex/graphdep/fxml/LauncherLayout.fxml";
     }
 
     @Override

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="1000.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cottontex.graphdep.controllers.AdminMonthlyTimeController">
+    <Label text="Monthly Time View" />
+   <Pane>
+      <children>
+          <ComboBox fx:id="yearComboBox" promptText="Select Year" />
+          <ComboBox fx:id="monthComboBox" layoutX="110.0" promptText="Select Month" />
+          <Button layoutX="233.0" onAction="#onViewMonthlyWorkHoursClick" text="View Monthly Work Hours" />
+          <Button layoutX="400.0" onAction="#onExportToExcelButtonClick" text="Export to Excel" />
+          <Button layoutX="870.0" layoutY="2.0" onAction="#onBackToAdminPageClick" text="Back to Admin Page" />
+      </children>
+   </Pane>
+    <TableView fx:id="scheduleTable" />
+</VBox>
