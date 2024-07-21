@@ -1,22 +1,17 @@
 package cottontex.graphdep.database.queries;
 
 import cottontex.graphdep.database.BaseDatabase;
-import cottontex.graphdep.utils.ExportExcelUtils;
 import cottontex.graphdep.utils.LoggerUtility;
 
-import java.io.IOException;
 import java.sql.*;
-
 import java.util.*;
 
 
 public class AdminScheduleHandler extends BaseDatabase {
 
-
     public Map<String, Map<Integer, String>> getMonthlyWorkData(int year, int month) {
         Map<String, Map<Integer, String>> result = new LinkedHashMap<>();
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(SQLQueries.GET_MONTHLY_WORK_DATA)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(SQLQueries.GET_MONTHLY_WORK_DATA)) {
             pstmt.setInt(1, month);
             pstmt.setInt(2, year);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -32,5 +27,4 @@ public class AdminScheduleHandler extends BaseDatabase {
         }
         return result;
     }
-
 }

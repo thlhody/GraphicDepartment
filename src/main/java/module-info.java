@@ -19,5 +19,9 @@ module cottontex.graphdep {
     opens cottontex.graphdep.models to javafx.base;
     exports cottontex.graphdep.views;
     opens cottontex.graphdep.views to javafx.fxml;
+    opens cottontex.graphdep.controllers.admin to javafx.fxml;
+    exports cottontex.graphdep.controllers.admin;
+    exports cottontex.graphdep.controllers.user;
+    opens cottontex.graphdep.controllers.user to javafx.fxml;
 
 }

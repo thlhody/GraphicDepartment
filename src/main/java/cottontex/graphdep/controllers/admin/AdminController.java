@@ -1,11 +1,13 @@
-package cottontex.graphdep.controllers;
+package cottontex.graphdep.controllers.admin;
 
-import cottontex.graphdep.database.queries.UserStatusHandler;
+import cottontex.graphdep.controllers.BaseController;
+import cottontex.graphdep.database.queries.UserTimeTableHandler;
 import cottontex.graphdep.models.UserStatus;
 import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -15,44 +17,66 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import lombok.Setter;
 
+import java.net.URL;
 import java.util.List;
 
 
 public class AdminController extends BaseController {
 
-    @FXML private Label welcomeLabel;
-    @FXML private Button viewWorkDataButton;
-    @FXML private Button logoutButton;
-    @FXML private TextField nameField;
-    @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
-    @FXML private Button addUserButton;
-    @FXML private VBox userStatusBox;
-    @FXML private Button settingsButton;
+    @FXML
+    private Label welcomeLabel;
+    @FXML
+    private Button viewWorkDataButton;
 
-    @Setter private Integer userID;
+    @FXML
+    private Button logoutButton;
+    @FXML
+    private Button viewMonthlyButton;
+    @FXML
+    private TextField nameField;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private Button addUserButton;
+    @FXML
+    private VBox userStatusBox;
+    @FXML
+    private Button settingsButton;
+    @FXML
+    private ImageView logoImage;
+
+    @Setter
+    private Integer userID;
     private String username;
 
-    private UserStatusHandler userStatusHandler = new UserStatusHandler();
-
+    private UserTimeTableHandler userTimeTableHandler = new UserTimeTableHandler();
 
     public void setUsername(String username) {
         this.username = username;
         welcomeLabel.setText("Welcome, " + username + "!");
-    }
-    @FXML
-    public void initialize(){
-        populateUserStatusBox();
+        URL resource = getClass().getResource("/cottontex/graphdep/images/ct.png");
     }
 
     @FXML
-    protected void onViewMonthlyTimeClick() {
-        loadPage((Stage) logoutButton.getScene().getWindow(), "/cottontex/graphdep/fxml/AdminMonthlyTimeLayout.fxml", "Monthly Time View");
+    public void initialize() {
+        populateUserStatusBox();
+        setupLogo();
+
     }
+
+
+    @FXML
+    protected void onViewMonthlyTimeClick() {
+        loadPage((Stage) viewMonthlyButton.getScene().getWindow(), "/cottontex/graphdep/fxml/admin/AdminMonthlyTimeLayout.fxml", "Monthly Time View");
+    }
+
     @FXML
     protected void onSettingsButtonClick() {
-        loadPage((Stage) settingsButton.getScene().getWindow(), "/cottontex/graphdep/fxml/SettingsAdminLayout.fxml", "Settings");
+        loadPage((Stage) settingsButton.getScene().getWindow(), "/cottontex/graphdep/fxml/admin/SettingsAdminLayout.fxml", "Settings");
     }
+
     @FXML
     protected void onLogoutAdminButtonClick() {
         loadPage((Stage) logoutButton.getScene().getWindow(), "/cottontex/graphdep/fxml/LauncherLayout.fxml", "Graphics Department Login");
@@ -74,7 +98,7 @@ public class AdminController extends BaseController {
             return;
         }
 
-        List<UserStatus> userStatuses = userStatusHandler.getUserStatuses();
+        List<UserStatus> userStatuses = userTimeTableHandler.getMostRecentUserStatuses();
         userStatusBox.getChildren().clear();
 
         setupUserStatusHeader(); // This will add the header to the userStatusBox
@@ -86,26 +110,41 @@ public class AdminController extends BaseController {
     }
 
     private HBox createUserStatusRow(UserStatus status) {
+        System.out.println("Creating row for user: " + status.getUsername()); // Debug log
+
         HBox userRow = new HBox(10);
         userRow.setAlignment(Pos.CENTER_LEFT);
         userRow.setStyle("-fx-padding: 5; -fx-background-radius: 5;");
 
         Rectangle statusIndicator = new Rectangle(10, 10);
-        statusIndicator.setFill(status.isOnline() ? Color.GREEN : Color.RED);
+        boolean isCurrentlyOnline = !status.getStartTime().equals("N/A") && status.getEndTime().equals("N/A");
+        statusIndicator.setFill(isCurrentlyOnline ? Color.GREEN : Color.RED);
 
         Label nameLabel = new Label(status.getUsername());
         nameLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
 
-        String timeLabelA = (status.getStartTime() != null ? status.getStartTime() : "N/A") +
-                " - " +
-                (status.getEndTime() != null ? status.getEndTime() : "N/A");
-        Label timeLabel = new Label(timeLabelA);
+        String startTime = status.getStartTime();
+        String endTime = status.getEndTime();
+
+        System.out.println("Start time: " + startTime + ", End time: " + endTime); // Debug log
+
+        String timeLabelText;
+        if (isCurrentlyOnline) {
+            timeLabelText = "Online since " + startTime;
+        } else if (!startTime.equals("N/A") && !endTime.equals("N/A")) {
+            timeLabelText = startTime + " - " + endTime;
+        } else if (!startTime.equals("N/A")) {
+            timeLabelText = "Last seen at " + startTime;
+        } else {
+            timeLabelText = "N/A - N/A";
+        }
+
+        Label timeLabel = new Label(timeLabelText);
         timeLabel.setFont(Font.font("System", 12));
 
         userRow.getChildren().addAll(statusIndicator, nameLabel, timeLabel);
         return userRow;
     }
-
     private void setupUserStatusHeader() {
         HBox headerBox = new HBox(10);
         headerBox.setAlignment(Pos.CENTER_LEFT);
@@ -125,6 +164,5 @@ public class AdminController extends BaseController {
             LoggerUtility.error("userStatusBox is null in setupUserStatusHeader method");
         }
     }
-
 
 }

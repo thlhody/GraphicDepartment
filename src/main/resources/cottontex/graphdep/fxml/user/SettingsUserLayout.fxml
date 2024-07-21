@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="cottontex.graphdep.controllers.SettingsUserController"
+      fx:controller="cottontex.graphdep.controllers.user.SettingsUserController"
       style="-fx-background-color: #f0f0f0;">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -24,6 +24,6 @@
 
     <Label fx:id="statusLabel" style="-fx-text-fill: #27ae60; -fx-font-size: 14px;"/>
 
-    <Button text="Back to User Page" onAction="#onBackToUserPageClick"
+    <Button text="Close" onAction="#onCloseClick"
             style="-fx-background-color: #34495e; -fx-text-fill: white;"/>
 </VBox>

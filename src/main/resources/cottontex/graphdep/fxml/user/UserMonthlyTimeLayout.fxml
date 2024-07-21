@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="cottontex.graphdep.controllers.user.UserMonthlyTimeController"
+            prefHeight="600.0" prefWidth="800.0">
+
+    <top>
+        <HBox spacing="10" alignment="CENTER" style="-fx-padding: 10;">
+            <Label text="My Work Hours" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <TableView fx:id="workHoursTable">
+            <columns>
+                <TableColumn fx:id="dateColumn" text="Date"/>
+                <TableColumn fx:id="startTimeColumn" text="Start Time"/>
+                <TableColumn fx:id="breaksColumn" text="Breaks"/>
+                <TableColumn fx:id="breaksTimeColumn" text="Breaks Time"/>
+                <TableColumn fx:id="endTimeColumn" text="End Time"/>
+                <TableColumn fx:id="totalWorkedTimeColumn" text="Total Worked Time"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" alignment="CENTER" style="-fx-padding: 10;">
+            <Button text="Close" onAction="#closeWindow"/>
+        </HBox>
+    </bottom>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+</BorderPane>

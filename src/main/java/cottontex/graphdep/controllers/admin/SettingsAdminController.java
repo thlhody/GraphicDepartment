@@ -1,5 +1,6 @@
-package cottontex.graphdep.controllers;
+package cottontex.graphdep.controllers.admin;
 
+import cottontex.graphdep.controllers.BaseController;
 import cottontex.graphdep.database.queries.UserManagementHandler;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -83,7 +84,7 @@ public class SettingsAdminController extends BaseController {
 
     @FXML
     protected void onBackButtonClick() {
-        loadPage((Stage) nameField.getScene().getWindow(), "/cottontex/graphdep/fxml/AdminPageLayout.fxml", "Admin Page");
+        loadPage((Stage) nameField.getScene().getWindow(), "/cottontex/graphdep/fxml/admin/AdminPageLayout.fxml", "Admin Page");
     }
 
     private void clearFields() {

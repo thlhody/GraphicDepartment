@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cottontex.graphdep.controllers.admin.AdminController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
+            <ImageView fx:id="logoImageView" fitHeight="100" fitWidth="100" preserveRatio="true" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="welcomeLabel" style="-fx-text-fill: Black; -fx-font-size: 16px;" />
+            <Button fx:id="viewMonthlyButton" onAction="#onViewMonthlyTimeClick" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" text="View Monthly Work Hours" />
+            <Button fx:id="settingsButton" onAction="#onSettingsButtonClick" text="Settings" />
+            <Button fx:id="logoutButton" onAction="#onLogoutAdminButtonClick" text="Logout" />
+        </HBox>
+    </top>
+
+    <left>
+        <ScrollPane fitToWidth="true" prefWidth="250" style="-fx-background-color: transparent;">
+            <VBox fx:id="userStatusBox" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" />
+        </ScrollPane>
+    </left>
+
+    <center>
+        <!-- Add a placeholder for the center content if needed -->
+        <StackPane />
+    </center>
+</BorderPane>

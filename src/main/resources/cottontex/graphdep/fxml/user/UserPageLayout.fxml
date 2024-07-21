@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+<?import jfxtras.scene.control.LocalTimePicker?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="cottontex.graphdep.controllers.user.UserController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 10;">
+            <ImageView fx:id="logoImage" fitWidth="100" fitHeight="100" preserveRatio="true"/>
+            <Region HBox.hgrow="ALWAYS" />
+            <VBox alignment="CENTER_RIGHT" spacing="5">
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Label fx:id="welcomeLabel" style="-fx-font-size: 18;"/>
+                    <Button fx:id="myAccountButton" text="My Account" onAction="#onMyAccountButtonClick"/>
+                    <Button fx:id="logoutButton" text="Logout" onAction="#onLogoutButtonClick"/>
+                </HBox>
+            </VBox>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" alignment="CENTER">
+            <HBox spacing="20" alignment="CENTER">
+                <Label fx:id="displayTimeInfo" style="-fx-font-weight: bold; -fx-font-size: 24;"/>
+            </HBox>
+            <HBox spacing="20" alignment="CENTER">
+                <Label fx:id="displayTimeInfo" style="-fx-font-weight: bold; -fx-font-size: 24;"/>
+                <!--
+                <DatePicker fx:id="datePicker"/>
+                <LocalTimePicker fx:id="timePicker"/>
+                -->
+            </HBox>
+            <HBox spacing="10" alignment="CENTER">
+                <Button fx:id="startButton" text="Start" onAction="#onStartButtonClick"
+                        style="-fx-background-color: #90EE90; -fx-text-fill: black;"/>
+                <Button fx:id="pauseButton" text="Pause" onAction="#onPauseButtonClick"
+                        style="-fx-background-color: #FFFF00; -fx-text-fill: black;"/>
+                <Button fx:id="endButton" text="End" onAction="#onEndButtonClick"
+                        style="-fx-background-color: #FF6347; -fx-text-fill: white;"/>
+            </HBox>
+                        <Button text="View My Work Hours" onAction="#viewWorkTable"
+                                style="-fx-background-color: #4682B4; -fx-text-fill: white;"/>
+        </VBox>
+    </center>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+</BorderPane>

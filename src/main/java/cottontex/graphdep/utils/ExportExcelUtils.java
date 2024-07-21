@@ -42,11 +42,11 @@ public class ExportExcelUtils {
             int totalMinutes = 0;
             for (int day = 1; day <= daysInMonth; day++) {
                 String dailyTotal = entry.getValue().getOrDefault(day, "");
-                if (!dailyTotal.isEmpty() && !dailyTotal.equals("00:00")) {
+                if (dailyTotal != null && !dailyTotal.isEmpty() && !dailyTotal.equals("00:00")) {
                     row.createCell(day).setCellValue(dailyTotal);
                     totalMinutes += DateTimeUtils.calculateMinutes(dailyTotal);
                 }
-                // If dailyTotal is empty or "00:00", we don't create a cell, leaving it blank
+                // If dailyTotal is null, empty, or "00:00", we don't create a cell, leaving it blank
             }
 
             row.createCell(daysInMonth + 1).setCellValue(DateTimeUtils.formatTotalTime(totalMinutes));

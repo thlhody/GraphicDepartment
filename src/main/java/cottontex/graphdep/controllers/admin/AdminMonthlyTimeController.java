@@ -1,5 +1,6 @@
-package cottontex.graphdep.controllers;
+package cottontex.graphdep.controllers.admin;
 
+import cottontex.graphdep.controllers.BaseController;
 import cottontex.graphdep.database.queries.AdminScheduleHandler;
 import cottontex.graphdep.models.WorkScheduleEntry;
 import cottontex.graphdep.utils.TableUtils;
@@ -33,7 +34,7 @@ public class AdminMonthlyTimeController extends BaseController {
 
     @FXML
     protected void onBackToAdminPageClick() {
-        loadPage((Stage) yearComboBox.getScene().getWindow(), "/cottontex/graphdep/fxml/AdminPageLayout.fxml", "Admin Page");
+        loadPage((Stage) yearComboBox.getScene().getWindow(), "/cottontex/graphdep/fxml/admin/AdminPageLayout.fxml", "Admin Page");
     }
 
     @FXML
