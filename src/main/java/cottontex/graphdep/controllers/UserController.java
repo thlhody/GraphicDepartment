@@ -1,6 +1,10 @@
 package cottontex.graphdep.controllers;
 
 import cottontex.graphdep.database.queries.ScheduleUserTable;
+import cottontex.graphdep.database.queries.UserLogin;
+import cottontex.graphdep.database.queries.UserStatusHandler;
+import cottontex.graphdep.models.UserStatus;
+import cottontex.graphdep.utils.DateTimeUtils;
 import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import jfxtras.scene.control.LocalTimePicker;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.io.IOException;
@@ -16,6 +21,9 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 public class UserController extends BaseController {
@@ -29,74 +37,107 @@ public class UserController extends BaseController {
     @FXML private Button endButton;
     @FXML private Button logoutButton;
     @FXML private Button myAccountButton;
+    @FXML private UserStatus currentStatus;
 
-    private ScheduleUserTable scheduleUserTable = new ScheduleUserTable();
-    private String currentUsername;
+    private UserStatusHandler userStatusHandler = new UserStatusHandler();
 
-    @Setter private Integer userID;
+    @Getter
+    private Integer userID;
+
+    @FXML
+    public void initialize() {
+        datePicker.setValue(LocalDate.now());
+        timePicker.setLocalTime(LocalTime.now());
+    }
 
     public void setUsername(String username) {
         welcomeLabel.setText("Welcome " + username + "!");
         datePicker.setValue(LocalDate.now());
     }
 
-    @FXML
-    protected void onLogoutButtonClick() {
-        loadPage((Stage) logoutButton.getScene().getWindow(), "/cottontex/graphdep/fxml/LauncherLayout.fxml", "Graphics Department Login");
+    public void setUserID(Integer userID) {
+        this.userID = userID;
+        loadUserStatus();
+    }
+
+    private String getUsernameFromDatabase() {
+        String username = UserStatusHandler.getUsernameById(userID);
+        if (username == null || username.isEmpty()) {
+            LoggerUtility.warn("Could not retrieve username for user ID: " + userID);
+            return "User"; // Default fallback if username can't be fetched
+        }
+        return username;
+    }
+
+    private void loadUserStatus() {
+        // Always display the welcome message
+        welcomeLabel.setText("Welcome, " + getUsernameFromDatabase() + "!");
+
+        currentStatus = userStatusHandler.getUserStatus(userID);
+
+        if (currentStatus != null) {
+            updateButtonStates();
+
+            if (currentStatus.getStartTime() != null && !currentStatus.getStartTime().isEmpty()) {
+                try {
+                    // Parse the full timestamp
+                    LocalDateTime startDateTime = LocalDateTime.parse(currentStatus.getStartTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    datePicker.setValue(startDateTime.toLocalDate());
+                    timePicker.setLocalTime(startDateTime.toLocalTime());
+                } catch (DateTimeParseException e) {
+                    LoggerUtility.error("Error parsing start time: " + currentStatus.getStartTime(), e);
+                    datePicker.setValue(LocalDate.now());
+                    timePicker.setLocalTime(LocalTime.now());
+                }
+            } else {
+                datePicker.setValue(LocalDate.now());
+                timePicker.setLocalTime(LocalTime.now());
+            }
+        } else {
+            LoggerUtility.error("Failed to load user status for user ID: " + userID);
+            updateButtonStates(false, true, true); // Enable only the start button
+            datePicker.setValue(LocalDate.now());
+            timePicker.setLocalTime(LocalTime.now());
+        }
+    }
+
+
+    private void updateButtonStates() {
+        if (currentStatus.isOnline()) {
+            startButton.setDisable(true);
+            pauseButton.setDisable(false);
+            endButton.setDisable(false);
+        } else {
+            startButton.setDisable(false);
+            pauseButton.setDisable(true);
+            endButton.setDisable(true);
+        }
     }
 
     @FXML
     protected void onStartButtonClick() {
-        LocalDateTime startDateTime = LocalDateTime.of(datePicker.getValue(), timePicker.getLocalTime());
-        Timestamp startTimestamp = Timestamp.valueOf(startDateTime);
-
-        if (scheduleUserTable.isStartHourExists(userID, startTimestamp)) {
-            showError(errorLabel, "You already started work at this hour.");
-            return;
-        }
-
-        scheduleUserTable.saveStartHour(userID, startTimestamp);
-        LoggerUtility.info("Start hour saved successfully!");
-        errorLabel.setText("Start hour saved successfully!");
-        updateButtonStates(true, false, false);
+        Timestamp startTimestamp = DateTimeUtils.getTimestampFromPickers(datePicker,timePicker);
+        userStatusHandler.saveStartTime(userID, startTimestamp);
+        loadUserStatus();
     }
 
     @FXML
     protected void onPauseButtonClick() {
-        LocalDateTime pauseDateTime = LocalDateTime.of(datePicker.getValue(), timePicker.getLocalTime());
-        Timestamp pauseTimestamp = Timestamp.valueOf(pauseDateTime);
-
-        if (!scheduleUserTable.hasStartHour(userID, Date.valueOf(datePicker.getValue()))) {
-            showError(errorLabel, "No active work period to pause.");
-            return;
-        }
-
-        if (showConfirmationDialog()) {
-            scheduleUserTable.savePauseTime(userID, pauseTimestamp);
-            LoggerUtility.info("Work paused successfully!");
-            errorLabel.setText("Work paused successfully!");
-            updateButtonStates(false, true, true);
-        }
+        Timestamp pauseTimestamp = DateTimeUtils.getTimestampFromPickers(datePicker,timePicker);
+        userStatusHandler.savePauseTime(userID, pauseTimestamp);
+        loadUserStatus();
     }
 
     @FXML
     protected void onEndButtonClick() {
-        LocalDateTime endDateTime = LocalDateTime.of(datePicker.getValue(), timePicker.getLocalTime());
-        Timestamp endTimestamp = Timestamp.valueOf(endDateTime);
+        Timestamp endTimestamp = DateTimeUtils.getTimestampFromPickers(datePicker,timePicker);
+        userStatusHandler.saveEndTime(userID, endTimestamp);
+        loadUserStatus();
+    }
 
-        if (!scheduleUserTable.hasStartHour(userID, Date.valueOf(datePicker.getValue()))) {
-            showError(errorLabel, "No active work period to end.");
-            return;
-        }
-
-        try {
-            scheduleUserTable.finalizeWorkDay(userID, endTimestamp, Date.valueOf(datePicker.getValue()));
-            LoggerUtility.info("End hour updated and total hours calculated successfully!");
-            errorLabel.setText("Work day finalized successfully!");
-            updateButtonStates(false, true, true);
-        } catch (Exception e) {
-            showError(errorLabel, "Error finalizing work day: " + e.getMessage());
-        }
+    @FXML
+    protected void onLogoutButtonClick() {
+        loadPage((Stage) logoutButton.getScene().getWindow(), "/cottontex/graphdep/fxml/LauncherLayout.fxml", "Login");
     }
 
     private void updateButtonStates(boolean startDisabled, boolean pauseDisabled, boolean endDisabled) {
@@ -105,14 +146,7 @@ public class UserController extends BaseController {
         endButton.setDisable(endDisabled);
     }
 
-    private boolean showConfirmationDialog() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Pause Work Confirmation");
-        alert.setHeaderText(null);
-        alert.setContentText("Are you sure you want to pause your current work?");
-        Optional<ButtonType> result = alert.showAndWait();
-        return result.isPresent() && result.get() == ButtonType.OK;
-    }
+
 
     @FXML
     protected void onMyAccountButtonClick() {
@@ -130,5 +164,12 @@ public class UserController extends BaseController {
             LoggerUtility.error("Error loading My Account page", e);
             // Show an error message to the user
         }
+    }
+
+    private String formatTime(Timestamp time) {
+        if (time == null) {
+            return "N/A";
+        }
+        return time.toLocalDateTime().format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 }

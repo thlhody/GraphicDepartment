@@ -25,7 +25,7 @@ public class LauncherController extends BaseController {
         String role = userLogin.authenticateUser(username, password);
 
         if (role != null) {
-            Integer userID = userLogin.getUserID(username);
+            int userID = userLogin.getUserID(username);
             Stage stage = (Stage) loginButton.getScene().getWindow();
             String fxmlPath = role.equals("ADMIN") ? "/cottontex/graphdep/fxml/AdminPageLayout.fxml" : "/cottontex/graphdep/fxml/UserPageLayout.fxml";
             String title = role.equals("ADMIN") ? "Admin Page" : "User Page";
@@ -42,7 +42,7 @@ public class LauncherController extends BaseController {
         }
     }
 
-    private void initializeController(FXMLLoader loader, String role, String username, Integer userID) {
+    private void initializeController(FXMLLoader loader, String role, String username, int userID) {
         if (role.equals("ADMIN")) {
             AdminController controller = loader.getController();
             controller.setUsername(username);
@@ -53,4 +53,5 @@ public class LauncherController extends BaseController {
             controller.setUserID(userID);
         }
     }
+
 }

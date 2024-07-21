@@ -6,8 +6,6 @@ import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -18,7 +16,7 @@ import javafx.stage.Stage;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Objects;
+
 
 public class AdminController extends BaseController {
 
@@ -90,19 +88,24 @@ public class AdminController extends BaseController {
     private HBox createUserStatusRow(UserStatus status) {
         HBox userRow = new HBox(10);
         userRow.setAlignment(Pos.CENTER_LEFT);
-        userRow.setStyle("-fx-background-color: #e8f5e9; -fx-padding: 5; -fx-background-radius: 5;");
+        userRow.setStyle("-fx-padding: 5; -fx-background-radius: 5;");
+
+        Rectangle statusIndicator = new Rectangle(10, 10);
+        statusIndicator.setFill(status.isOnline() ? Color.GREEN : Color.RED);
 
         Label nameLabel = new Label(status.getUsername());
         nameLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
-        nameLabel.setTextFill(Color.web("#2e7d32"));
 
-        Label timeLabel = new Label(status.getStartTime() + " - " + status.getEndTime());
+        String timeLabelA = (status.getStartTime() != null ? status.getStartTime() : "N/A") +
+                " - " +
+                (status.getEndTime() != null ? status.getEndTime() : "N/A");
+        Label timeLabel = new Label(timeLabelA);
         timeLabel.setFont(Font.font("System", 12));
-        timeLabel.setTextFill(Color.web("#1b5e20"));
 
-        userRow.getChildren().addAll(nameLabel, timeLabel);
+        userRow.getChildren().addAll(statusIndicator, nameLabel, timeLabel);
         return userRow;
     }
+
     private void setupUserStatusHeader() {
         HBox headerBox = new HBox(10);
         headerBox.setAlignment(Pos.CENTER_LEFT);

@@ -7,7 +7,7 @@ import java.sql.*;
 
 public class ScheduleUserTable extends BaseDatabase {
 
-    public boolean isStartHourExists(int userId, Timestamp startTimestamp) {
+    public boolean isStartHourExists(Integer userId, Timestamp startTimestamp) {
         String sql = "SELECT COUNT(*) FROM time_processing WHERE user_id = ? AND DATE(time_a) = DATE(?) AND HOUR(time_a) = HOUR(?)";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -25,7 +25,7 @@ public class ScheduleUserTable extends BaseDatabase {
         return false;
     }
 
-    public void saveStartHour(int userId, Timestamp startTimestamp) {
+    public void saveStartHour(Integer userId, Timestamp startTimestamp) {
         if (isStartHourExists(userId, startTimestamp)) {
             LoggerUtility.info("You already started work at this hour. Please pause or end your current session.");
             return;
@@ -41,7 +41,7 @@ public class ScheduleUserTable extends BaseDatabase {
         }
     }
 
-    public boolean hasStartHour(int userId, Date date) {
+    public boolean hasStartHour(Integer userId, Date date) {
         String sql = "SELECT COUNT(*) FROM time_processing WHERE user_id = ? AND DATE(time_a) = ? AND time_b IS NULL";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -58,7 +58,7 @@ public class ScheduleUserTable extends BaseDatabase {
         return false;
     }
 
-    public void savePauseTime(int userId, Timestamp pauseTimestamp) {
+    public void savePauseTime(Integer userId, Timestamp pauseTimestamp) {
         String sql = "UPDATE time_processing SET time_b = ? WHERE user_id = ? AND time_b IS NULL ORDER BY time_a DESC LIMIT 1";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
