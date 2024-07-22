@@ -1,7 +1,7 @@
 package cottontex.graphdep.controllers.admin;
 
 import cottontex.graphdep.controllers.BaseController;
-import cottontex.graphdep.database.queries.UserManagementHandler;
+import cottontex.graphdep.database.queries.admin.UserManagementHandler;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;

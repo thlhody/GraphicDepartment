@@ -1,6 +1,7 @@
-package cottontex.graphdep.database.queries;
+package cottontex.graphdep.database.queries.user;
 
 import cottontex.graphdep.database.BaseDatabase;
+import cottontex.graphdep.database.queries.SQLQueries;
 import cottontex.graphdep.utils.LoggerUtility;
 
 import java.sql.*;
@@ -8,7 +9,7 @@ import java.sql.*;
 public class ScheduleUserTable extends BaseDatabase {
 
     public boolean saveStartHour(Integer userId, Timestamp startTimestamp) {
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(SQLQueries.SAVE_START_HOUR)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = getPreparedStatement(conn, SQLQueries.SAVE_START_HOUR)) {
             pstmt.setInt(1, userId);
             pstmt.setTimestamp(2, startTimestamp);
             int affectedRows = pstmt.executeUpdate();
@@ -20,7 +21,7 @@ public class ScheduleUserTable extends BaseDatabase {
     }
 
     public void savePauseTime(Integer userId, Timestamp pauseTimestamp) {
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(SQLQueries.SAVE_PAUSE_TIME)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = getPreparedStatement(conn, SQLQueries.SAVE_PAUSE_TIME)) {
             pstmt.setTimestamp(1, pauseTimestamp);
             pstmt.setTimestamp(2, pauseTimestamp);
             pstmt.setInt(3, userId);
@@ -32,8 +33,8 @@ public class ScheduleUserTable extends BaseDatabase {
 
     public void finalizeWorkDay(Integer userId, Timestamp endTimestamp) {
 
-        try (Connection conn = getConnection(); PreparedStatement pstmtUpdate = conn.prepareStatement(SQLQueries.FINALIZE_WORK_DAY_TIME_PROCESSING);
-                                                CallableStatement callStmt = conn.prepareCall(SQLQueries.FINALIZE_WORK_DAY_CALL_PROCEDURE)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmtUpdate = getPreparedStatement(conn, SQLQueries.FINALIZE_WORK_DAY_TIME_PROCESSING);
+                                                CallableStatement callStmt = getCallableStatement(conn, SQLQueries.FINALIZE_WORK_DAY_CALL_PROCEDURE)) {
 
             // Update time_processing
             pstmtUpdate.setTimestamp(1, endTimestamp);
@@ -53,7 +54,7 @@ public class ScheduleUserTable extends BaseDatabase {
 
     public boolean hasActiveSession(Integer userId, Date date) {
 
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(SQLQueries.HAS_ACTIVE_SESSION)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = getPreparedStatement(conn, SQLQueries.HAS_ACTIVE_SESSION)) {
             pstmt.setInt(1, userId);
             pstmt.setDate(2, new java.sql.Date(date.getTime()));
             ResultSet rs = pstmt.executeQuery();

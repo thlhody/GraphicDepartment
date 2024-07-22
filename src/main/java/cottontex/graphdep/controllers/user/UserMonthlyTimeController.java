@@ -1,7 +1,7 @@
 package cottontex.graphdep.controllers.user;
 
 import cottontex.graphdep.controllers.BaseController;
-import cottontex.graphdep.database.queries.UserTimeTableHandler;
+import cottontex.graphdep.database.queries.user.UserTimeTableHandler;
 import cottontex.graphdep.models.WorkHourEntry;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;

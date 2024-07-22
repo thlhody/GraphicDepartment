@@ -1,10 +1,10 @@
 package cottontex.graphdep.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoggerUtility {
-    private static final Logger logger = LogManager.getLogger(LoggerUtility.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoggerUtility.class);
 
     public static void info(String message) {
         logger.info(message);

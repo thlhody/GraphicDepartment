@@ -1,6 +1,7 @@
-package cottontex.graphdep.database.queries;
+package cottontex.graphdep.database.queries.admin;
 
 import cottontex.graphdep.database.BaseDatabase;
+import cottontex.graphdep.database.queries.SQLQueries;
 import cottontex.graphdep.utils.LoggerUtility;
 
 import java.sql.*;
@@ -10,7 +11,7 @@ import java.util.List;
 public class UserManagementHandler extends BaseDatabase {
 
     public boolean addUser(String name, String username, String password) {
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(SQLQueries.ADD_USER)) {
+        try (Connection conn = getConnection(); PreparedStatement stmt = getPreparedStatement(conn, SQLQueries.ADD_USER)) {
 
             stmt.setString(1, name);
             stmt.setString(2, username);
@@ -21,9 +22,10 @@ public class UserManagementHandler extends BaseDatabase {
             return false;
         }
     }
+
     public List<String> getAllUsernames() {
         List<String> usernames = new ArrayList<>();
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(SQLQueries.GET_ALL_USERNAMES);
+        try (Connection conn = getConnection(); PreparedStatement stmt = getPreparedStatement(conn, SQLQueries.GET_ALL_USERNAMES);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 usernames.add(rs.getString("username"));
@@ -35,7 +37,7 @@ public class UserManagementHandler extends BaseDatabase {
     }
 
     public boolean resetPassword(String username, String newPassword) {
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(SQLQueries.RESET_PASSWORD)) {
+        try (Connection conn = getConnection(); PreparedStatement stmt = getPreparedStatement(conn, SQLQueries.RESET_PASSWORD)) {
 
             stmt.setString(1, newPassword);
             stmt.setString(2, username);
@@ -47,7 +49,7 @@ public class UserManagementHandler extends BaseDatabase {
     }
 
     public boolean deleteUser(String username) {
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(SQLQueries.DELETE_USER)) {
+        try (Connection conn = getConnection(); PreparedStatement stmt = getPreparedStatement(conn, SQLQueries.DELETE_USER)) {
 
             stmt.setString(1, username);
             return stmt.executeUpdate() > 0;
@@ -57,7 +59,7 @@ public class UserManagementHandler extends BaseDatabase {
         }
     }
     public boolean changePassword(Integer userID, String currentPassword, String newPassword) {
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(SQLQueries.CHANGE_PASSWORD)) {
+        try (Connection conn = getConnection(); PreparedStatement stmt = getPreparedStatement(conn, SQLQueries.CHANGE_PASSWORD)) {
 
             stmt.setString(1, newPassword);
             stmt.setInt(2, userID);

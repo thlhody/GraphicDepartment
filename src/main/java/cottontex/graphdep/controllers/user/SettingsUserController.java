@@ -1,7 +1,7 @@
 package cottontex.graphdep.controllers.user;
 
 import cottontex.graphdep.controllers.BaseController;
-import cottontex.graphdep.database.queries.UserManagementHandler;
+import cottontex.graphdep.database.queries.admin.UserManagementHandler;
 import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

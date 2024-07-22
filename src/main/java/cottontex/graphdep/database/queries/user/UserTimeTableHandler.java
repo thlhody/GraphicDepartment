@@ -1,6 +1,8 @@
-package cottontex.graphdep.database.queries;
+package cottontex.graphdep.database.queries.user;
 
+import cottontex.graphdep.database.BaseDatabase;
 import cottontex.graphdep.database.DatabaseConnection;
+import cottontex.graphdep.database.queries.SQLQueries;
 import cottontex.graphdep.models.UserStatus;
 import cottontex.graphdep.models.WorkHourEntry;
 import cottontex.graphdep.utils.DateTimeUtils;
@@ -10,12 +12,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserTimeTableHandler {
+public class UserTimeTableHandler extends BaseDatabase {
 
     public List<UserStatus> getMostRecentUserStatuses() {
         List<UserStatus> userStatuses = new ArrayList<>();
 
-        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(SQLQueries.GET_MOST_RECENT_USER_STATUSES);
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = getPreparedStatement(conn, SQLQueries.GET_MOST_RECENT_USER_STATUSES);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -41,20 +43,19 @@ public class UserTimeTableHandler {
     public List<WorkHourEntry> getUserMonthlyWorkHours(Integer userId) {
         List<WorkHourEntry> workHours = new ArrayList<>();
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(SQLQueries.GET_MONTHLY_WORK_HOURS_USER)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(SQLQueries.GET_MONTHLY_WORK_HOURS_USER)) {
 
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 WorkHourEntry entry = new WorkHourEntry(
-                        rs.getDate("first_start_time") != null ? rs.getDate("first_start_time").toLocalDate() : null,
-                        rs.getTimestamp("first_start_time") != null ? rs.getTimestamp("first_start_time").toLocalDateTime() : null,
+                        rs.getDate("work_date").toLocalDate(),
+                        rs.getTimestamp("first_start_time").toLocalDateTime(),
                         rs.getInt("breaks"),
-                        rs.getTime("breaks_time") != null ? rs.getTime("breaks_time").toLocalTime() : null,
-                        rs.getTimestamp("end_time") != null ? rs.getTimestamp("end_time").toLocalDateTime() : null,
-                        rs.getTime("total_worked_time") != null ? rs.getTime("total_worked_time").toLocalTime() : null
+                        rs.getTime("breaks_time").toLocalTime(),
+                        rs.getTimestamp("end_time").toLocalDateTime(),
+                        rs.getTime("total_worked_time").toLocalTime()
                 );
                 workHours.add(entry);
             }

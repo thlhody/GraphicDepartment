@@ -2,17 +2,25 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox prefHeight="1000.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cottontex.graphdep.controllers.admin.AdminMonthlyTimeController">
-    <Label text="Monthly Time View" />
-   <Pane>
-      <children>
-          <ComboBox fx:id="yearComboBox" promptText="Select Year" />
-          <ComboBox fx:id="monthComboBox" layoutX="110.0" promptText="Select Month" />
-          <Button layoutX="233.0" onAction="#onViewMonthlyWorkHoursClick" text="View Monthly Work Hours" />
-          <Button fx:id="exportToExcelButton" layoutX="400.0" onAction="#onExportToExcelButtonClick" text="Export to Excel" />
-          <Button layoutX="870.0" layoutY="2.0" onAction="#onBackToAdminPageClick" text="Back to Admin Page" />
-      </children>
-   </Pane>
-    <TableView fx:id="scheduleTable" />
+<VBox spacing="10" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cottontex.graphdep.controllers.admin.AdminMonthlyTimeController">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <Label text="Monthly Time View" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <ComboBox fx:id="yearComboBox" promptText="Select Year"/>
+        <ComboBox fx:id="monthComboBox" promptText="Select Month"/>
+        <Button onAction="#onViewMonthlyWorkHoursClick" text="View Monthly Work Hours"/>
+        <Button fx:id="exportToExcelButton" onAction="#onExportToExcelButtonClick" text="Export to Excel"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button onAction="#onBackToAdminPageClick" text="Back to Admin Page"/>
+    </HBox>
+
+    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true">
+        <TableView fx:id="scheduleTable"/>
+    </ScrollPane>
 </VBox>

@@ -1,7 +1,7 @@
 package cottontex.graphdep.controllers.admin;
 
 import cottontex.graphdep.controllers.BaseController;
-import cottontex.graphdep.database.queries.AdminScheduleHandler;
+import cottontex.graphdep.database.queries.admin.AdminScheduleHandler;
 import cottontex.graphdep.models.WorkScheduleEntry;
 import cottontex.graphdep.utils.TableUtils;
 import cottontex.graphdep.utils.ExportExcelUtils;
@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Objects;
 
 public class AdminMonthlyTimeController extends BaseController {
 
@@ -30,6 +31,20 @@ public class AdminMonthlyTimeController extends BaseController {
     public void initialize() {
         initializeComboBoxes();
         TableUtils.setupTableColumns(scheduleTable);
+        scheduleTable.setFixedCellSize(25);
+        scheduleTable.setPrefHeight(scheduleTable.getFixedCellSize()*22.5);
+        scheduleTable.getStyleClass().add("alternating-row-colors");
+        scheduleTable.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/cottontex/graphdep/css/table-styles.css")).toExternalForm());
+
+    }
+
+    private void initializeComboBoxes() {
+        yearComboBox.getItems().addAll(2023, 2024, 2025);
+        yearComboBox.setValue(LocalDate.now().getYear());
+        for (int i = 1; i <= 12; i++) {
+            monthComboBox.getItems().add(i);
+        }
+        monthComboBox.setValue(LocalDate.now().getMonthValue());
     }
 
     @FXML
@@ -43,8 +58,18 @@ public class AdminMonthlyTimeController extends BaseController {
         int selectedMonth = monthComboBox.getValue();
 
         Map<String, Map<Integer, String>> data = adminScheduleHandler.getMonthlyWorkData(selectedYear, selectedMonth);
+
+        // Remove admin user from the data
+        data.remove("Admin");
+
         ObservableList<WorkScheduleEntry> entries = TableUtils.createWorkScheduleEntries(data);
         scheduleTable.setItems(entries);
+
+        // Set the preferred height to show only the visible users
+        double headerHeight = 500; // Approximate height of the header
+        double rowHeight = scheduleTable.getFixedCellSize();
+        double tableHeight = headerHeight + (rowHeight * entries.size());
+        scheduleTable.setPrefHeight(tableHeight);
     }
 
     @FXML
@@ -65,6 +90,7 @@ public class AdminMonthlyTimeController extends BaseController {
 
     private void exportToExcel(int year, int month, String filePath) {
         Map<String, Map<Integer, String>> data = adminScheduleHandler.getMonthlyWorkData(year, month);
+        data.remove("Admin");
         try {
             ExportExcelUtils.exportToExcel(data, year, month, filePath);
             showAlert("Success", "Excel file exported successfully.");
@@ -74,13 +100,4 @@ public class AdminMonthlyTimeController extends BaseController {
         }
     }
 
-    private void initializeComboBoxes() {
-        yearComboBox.getItems().addAll(2023, 2024, 2025);
-        yearComboBox.setValue(LocalDate.now().getYear());
-
-        for (int i = 1; i <= 12; i++) {
-            monthComboBox.getItems().add(i);
-        }
-        monthComboBox.setValue(LocalDate.now().getMonthValue());
-    }
 }

@@ -1,6 +1,7 @@
-package cottontex.graphdep.database.queries;
+package cottontex.graphdep.database.queries.admin;
 
 import cottontex.graphdep.database.BaseDatabase;
+import cottontex.graphdep.database.queries.SQLQueries;
 import cottontex.graphdep.utils.LoggerUtility;
 
 import java.sql.*;
@@ -11,9 +12,12 @@ public class AdminScheduleHandler extends BaseDatabase {
 
     public Map<String, Map<Integer, String>> getMonthlyWorkData(int year, int month) {
         Map<String, Map<Integer, String>> result = new LinkedHashMap<>();
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(SQLQueries.GET_MONTHLY_WORK_DATA)) {
-            pstmt.setInt(1, month);
-            pstmt.setInt(2, year);
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(SQLQueries.GET_MONTHLY_WORK_DATA)) {
+
+            pstmt.setInt(1, year);
+            pstmt.setInt(2, month);
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     String name = rs.getString("name");
