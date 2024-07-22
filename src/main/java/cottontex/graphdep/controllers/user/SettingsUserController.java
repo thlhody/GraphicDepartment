@@ -52,11 +52,6 @@ public class SettingsUserController extends BaseController {
             setStatusMessage("Failed to change password. Please check your current password.", false);
         }
     }
-//
-//    @FXML
-//    protected void onBackToUserPageClick() {
-//        loadPage((Stage) statusLabel.getScene().getWindow(), "/cottontex/graphdep/fxml/user/UserPageLayout.fxml", "User Page");
-//    }
 
     private void setStatusMessage(String message, boolean isSuccess) {
         statusLabel.setText(message);
@@ -90,5 +85,10 @@ public class SettingsUserController extends BaseController {
         } catch (IOException e) {
             LoggerUtility.error(e.getMessage());
         }
+    }
+
+    @Override
+    public void initializeUserData() {
+
     }
 }

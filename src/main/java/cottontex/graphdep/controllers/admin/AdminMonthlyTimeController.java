@@ -1,5 +1,7 @@
 package cottontex.graphdep.controllers.admin;
 
+import cottontex.graphdep.constants.AppPathsCSS;
+import cottontex.graphdep.constants.AppPathsFXML;
 import cottontex.graphdep.controllers.BaseController;
 import cottontex.graphdep.database.queries.admin.AdminScheduleHandler;
 import cottontex.graphdep.models.WorkScheduleEntry;
@@ -34,7 +36,7 @@ public class AdminMonthlyTimeController extends BaseController {
         scheduleTable.setFixedCellSize(25);
         scheduleTable.setPrefHeight(scheduleTable.getFixedCellSize()*22.5);
         scheduleTable.getStyleClass().add("alternating-row-colors");
-        scheduleTable.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/cottontex/graphdep/css/table-styles.css")).toExternalForm());
+        scheduleTable.getStylesheets().add(Objects.requireNonNull(getClass().getResource(AppPathsCSS.TABLE_STYLES_A)).toExternalForm());
 
     }
 
@@ -49,7 +51,7 @@ public class AdminMonthlyTimeController extends BaseController {
 
     @FXML
     protected void onBackToAdminPageClick() {
-        loadPage((Stage) yearComboBox.getScene().getWindow(), "/cottontex/graphdep/fxml/admin/AdminPageLayout.fxml", "Admin Page");
+        loadPage((Stage) yearComboBox.getScene().getWindow(), AppPathsFXML.ADMIN_PAGE_LAYOUT, "Admin Page");
     }
 
     @FXML
@@ -100,4 +102,8 @@ public class AdminMonthlyTimeController extends BaseController {
         }
     }
 
+    @Override
+    public void initializeUserData() {
+
+    }
 }

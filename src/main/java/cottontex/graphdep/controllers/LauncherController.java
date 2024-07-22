@@ -1,8 +1,8 @@
 package cottontex.graphdep.controllers;
 
-import cottontex.graphdep.controllers.admin.AdminController;
-import cottontex.graphdep.controllers.user.UserController;
+import cottontex.graphdep.constants.AppPathsFXML;
 import cottontex.graphdep.database.queries.UserLogin;
+import cottontex.graphdep.models.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -18,12 +18,12 @@ public class LauncherController extends BaseController {
     @FXML private PasswordField passwordField;
     @FXML private Label errorMessageLabel;
     @FXML private Button loginButton;
-    @FXML private ImageView logoImageView;
-
+    @FXML private ImageView logoImage;
 
     private UserLogin userLogin = new UserLogin();
 
-    @FXML public void initialize(){
+    @FXML
+    public void initialize() {
         setupLogo();
     }
 
@@ -35,14 +35,20 @@ public class LauncherController extends BaseController {
 
         if (role != null) {
             int userID = userLogin.getUserID(username);
+            UserSession session = UserSession.getInstance();
+            session.setUserID(userID);
+            session.setUsername(username);
+            session.setRole(role);
+
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            String fxmlPath = role.equals("ADMIN") ? "/cottontex/graphdep/fxml/admin/AdminPageLayout.fxml" : "/cottontex/graphdep/fxml/user/UserPageLayout.fxml";
+            String fxmlPath = role.equals("ADMIN") ? AppPathsFXML.ADMIN_PAGE_LAYOUT : AppPathsFXML.USER_PAGE_LAYOUT;
             String title = role.equals("ADMIN") ? "Admin Page" : "User Page";
 
             FXMLLoader loader = loadPage(stage, fxmlPath, title);
 
             if (loader != null) {
-                initializeController(loader, role, username, userID);
+                BaseController controller = loader.getController();
+                controller.initializeUserData();
             } else {
                 showError(errorMessageLabel, "Error loading page.");
             }
@@ -51,14 +57,9 @@ public class LauncherController extends BaseController {
         }
     }
 
-    private void initializeController(FXMLLoader loader, String role, String username, int userID) {
-        if (role.equals("ADMIN")) {
-            AdminController controller = loader.getController();
-            controller.setUsername(username);
-            controller.setUserID(userID);
-        } else {
-            UserController controller = loader.getController();
-            controller.setUserInfo(userID, username);
-        }
+    @Override
+    public void initializeUserData() {
+        // This method is not needed for LauncherController
+        // but we need to implement it to satisfy the abstract method in BaseController
     }
 }

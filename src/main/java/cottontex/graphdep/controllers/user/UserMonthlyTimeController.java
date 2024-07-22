@@ -52,4 +52,8 @@ public class UserMonthlyTimeController extends BaseController {
         stage.close();
     }
 
+    @Override
+    public void initializeUserData() {
+
+    }
 }

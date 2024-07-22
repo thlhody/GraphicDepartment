@@ -11,12 +11,12 @@
             <padding>
                 <Insets bottom="10" left="10" right="10" top="10" />
             </padding>
-            <ImageView fx:id="logoImageView" fitHeight="100" fitWidth="100" preserveRatio="true" />
+            <ImageView fx:id="logoImage" fitWidth="100" fitHeight="100" preserveRatio="true"/>
             <Region HBox.hgrow="ALWAYS" />
-            <Label fx:id="welcomeLabel" style="-fx-text-fill: Black; -fx-font-size: 16px;" />
+            <Label fx:id="welcomeLabel" style="-fx-text-fill: Black; -fx-font-size: 18px;" />
             <Button fx:id="viewMonthlyButton" onAction="#onViewMonthlyTimeClick" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" text="View Monthly Work Hours" />
-            <Button fx:id="settingsButton" onAction="#onSettingsButtonClick" text="Settings" />
-            <Button fx:id="logoutButton" onAction="#onLogoutAdminButtonClick" text="Logout" />
+            <Button fx:id="settingsButton" onAction="#onSettingsButtonClick" text="Settings" prefWidth="100" />
+            <Button fx:id="logoutButton" onAction="#onLogoutAdminButtonClick" text="Logout" prefWidth="100" />
         </HBox>
     </top>
 
@@ -27,7 +27,6 @@
     </left>
 
     <center>
-        <!-- Add a placeholder for the center content if needed -->
         <StackPane />
     </center>
 </BorderPane>

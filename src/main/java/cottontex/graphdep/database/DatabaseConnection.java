@@ -2,24 +2,21 @@ package cottontex.graphdep.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import cottontex.graphdep.constants.DatabaseConfig;
 import cottontex.graphdep.utils.LoggerUtility;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/grafic_dep_database";
-    private static final String USERNAME = "rootTesting";
-    private static final String PASSWORD = "rootTesting";
-
     private static HikariDataSource dataSource;
 
     static {
         try {
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl(URL);
-            config.setUsername(USERNAME);
-            config.setPassword(PASSWORD);
+            config.setJdbcUrl(DatabaseConfig.URL);
+            config.setUsername(DatabaseConfig.USERNAME);
+            config.setPassword(DatabaseConfig.PASSWORD);
             config.setMaximumPoolSize(10);
             config.setMinimumIdle(5);
             config.setIdleTimeout(300000);

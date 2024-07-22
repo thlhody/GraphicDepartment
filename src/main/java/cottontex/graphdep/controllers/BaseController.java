@@ -1,5 +1,7 @@
 package cottontex.graphdep.controllers;
 
+import cottontex.graphdep.constants.AppPathsIMG;
+import cottontex.graphdep.models.UserSession;
 import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,6 +17,9 @@ import java.net.URL;
 import java.util.Objects;
 
 public abstract class BaseController {
+    protected UserSession userSession = UserSession.getInstance();
+
+    @FXML protected ImageView logoImage;
 
     protected FXMLLoader loadPage(Stage stage, String fxmlPath, String title) {
         try {
@@ -48,17 +53,16 @@ public abstract class BaseController {
         alert.showAndWait();
     }
 
-    @FXML
-    protected ImageView logoImageView;
-
     protected void setupLogo() {
-        if (logoImageView != null) {
+        if (logoImage != null) {
             try {
-                Image logo = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/cottontex/graphdep/images/ct.png")));
-                logoImageView.setImage(logo);
+                Image logo = new Image(Objects.requireNonNull(getClass().getResourceAsStream(AppPathsIMG.COTTONTEX_LOGO)));
+                logoImage.setImage(logo);
             } catch (Exception e) {
                 LoggerUtility.error("Error loading logo: " + e.getMessage(), e);
             }
         }
     }
+
+    public abstract void initializeUserData();
 }

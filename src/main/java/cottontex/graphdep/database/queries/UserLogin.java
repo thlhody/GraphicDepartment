@@ -1,5 +1,6 @@
 package cottontex.graphdep.database.queries;
 
+import cottontex.graphdep.constants.SQLQueries;
 import cottontex.graphdep.database.BaseDatabase;
 import cottontex.graphdep.utils.LoggerUtility;
 

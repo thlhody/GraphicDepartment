@@ -1,5 +1,7 @@
 package cottontex.graphdep.controllers.admin;
 
+import cottontex.graphdep.constants.AppPathsFXML;
+import cottontex.graphdep.constants.AppPathsIMG;
 import cottontex.graphdep.controllers.BaseController;
 import cottontex.graphdep.database.queries.user.UserTimeTableHandler;
 import cottontex.graphdep.models.UserStatus;
@@ -7,6 +9,7 @@ import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -15,11 +18,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import lombok.Setter;
 
-import java.net.URL;
+import java.io.InputStream;
 import java.util.List;
-
+import java.util.Objects;
 
 public class AdminController extends BaseController {
 
@@ -27,7 +29,6 @@ public class AdminController extends BaseController {
     private Label welcomeLabel;
     @FXML
     private Button viewWorkDataButton;
-
     @FXML
     private Button logoutButton;
     @FXML
@@ -47,49 +48,38 @@ public class AdminController extends BaseController {
     @FXML
     private ImageView logoImage;
 
-    @Setter
-    private Integer userID;
-    private String username;
+    private final UserTimeTableHandler userTimeTableHandler = new UserTimeTableHandler();
 
-    private UserTimeTableHandler userTimeTableHandler = new UserTimeTableHandler();
-
-    public void setUsername(String username) {
-        this.username = username;
-        welcomeLabel.setText("Welcome, " + username + "!");
-        URL resource = getClass().getResource("/cottontex/graphdep/images/ct.png");
+    @Override
+    public void initializeUserData() {
+        welcomeLabel.setText("Welcome, " + userSession.getUsername() + "!");
+        populateUserStatusBox();
     }
 
     @FXML
     public void initialize() {
         populateUserStatusBox();
         setupLogo();
-
     }
-
 
     @FXML
     protected void onViewMonthlyTimeClick() {
-        loadPage((Stage) viewMonthlyButton.getScene().getWindow(), "/cottontex/graphdep/fxml/admin/AdminMonthlyTimeLayout.fxml", "Monthly Time View");
+        loadPage((Stage) viewMonthlyButton.getScene().getWindow(), AppPathsFXML.VIEW_MONTHLY_TIME_LAYOUT, "Monthly Time View");
     }
 
     @FXML
     protected void onSettingsButtonClick() {
-        loadPage((Stage) settingsButton.getScene().getWindow(), "/cottontex/graphdep/fxml/admin/SettingsAdminLayout.fxml", "Settings");
+        loadPage((Stage) settingsButton.getScene().getWindow(), AppPathsFXML.SETTINGS_ADMIN_LAYOUT, "Settings");
     }
 
     @FXML
     protected void onLogoutAdminButtonClick() {
-        loadPage((Stage) logoutButton.getScene().getWindow(), "/cottontex/graphdep/fxml/LauncherLayout.fxml", "Graphics Department Login");
+        loadPage((Stage) logoutButton.getScene().getWindow(), AppPathsFXML.LAUNCHER_LAYOUT, "Graphics Department Login");
     }
+
 
     private void refreshUserStatus() {
         populateUserStatusBox();
-    }
-
-    private void clearFields() {
-        nameField.clear();
-        usernameField.clear();
-        passwordField.clear();
     }
 
     private void populateUserStatusBox() {
@@ -110,7 +100,6 @@ public class AdminController extends BaseController {
     }
 
     private HBox createUserStatusRow(UserStatus status) {
-        System.out.println("Creating row for user: " + status.getUsername()); // Debug log
 
         HBox userRow = new HBox(10);
         userRow.setAlignment(Pos.CENTER_LEFT);
@@ -125,8 +114,6 @@ public class AdminController extends BaseController {
 
         String startTime = status.getStartTime();
         String endTime = status.getEndTime();
-
-        System.out.println("Start time: " + startTime + ", End time: " + endTime); // Debug log
 
         String timeLabelText;
         if (isCurrentlyOnline) {
@@ -145,6 +132,7 @@ public class AdminController extends BaseController {
         userRow.getChildren().addAll(statusIndicator, nameLabel, timeLabel);
         return userRow;
     }
+
     private void setupUserStatusHeader() {
         HBox headerBox = new HBox(10);
         headerBox.setAlignment(Pos.CENTER_LEFT);
@@ -152,7 +140,28 @@ public class AdminController extends BaseController {
         Label header = new Label("User Status");
         header.setFont(Font.font("System", FontWeight.BOLD, 16));
 
-        Button refreshButton = new Button("Refresh");
+        Button refreshButton = new Button();
+        refreshButton.setStyle("-fx-background-color: transparent;"); // Make button background transparent
+
+        // Load the refresh icon
+        try {
+            InputStream iconStream = getClass().getResourceAsStream(AppPathsIMG.REFRESH_ICON);
+            if (iconStream != null) {
+                Image refreshIcon = new Image(iconStream);
+                ImageView refreshIconView = new ImageView(refreshIcon);
+                refreshIconView.setFitHeight(20); // Adjust size as needed
+                refreshIconView.setFitWidth(20);  // Adjust size as needed
+                refreshButton.setGraphic(refreshIconView);
+                refreshButton.setTooltip(new Tooltip("Refresh")); // Add tooltip for accessibility
+            } else {
+                LoggerUtility.error("Refresh icon not found: " + AppPathsIMG.REFRESH_ICON);
+                refreshButton.setText("Refresh"); // Fallback to text if icon not found
+            }
+        } catch (Exception e) {
+            LoggerUtility.error("Failed to load refresh icon", e);
+            refreshButton.setText("Refresh"); // Fallback to text if icon loading fails
+        }
+
         refreshButton.setOnAction(e -> refreshUserStatus());
 
         headerBox.getChildren().addAll(header, refreshButton);
@@ -164,5 +173,4 @@ public class AdminController extends BaseController {
             LoggerUtility.error("userStatusBox is null in setupUserStatusHeader method");
         }
     }
-
 }

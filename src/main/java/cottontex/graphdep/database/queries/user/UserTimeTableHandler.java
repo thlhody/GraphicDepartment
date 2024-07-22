@@ -2,7 +2,7 @@ package cottontex.graphdep.database.queries.user;
 
 import cottontex.graphdep.database.BaseDatabase;
 import cottontex.graphdep.database.DatabaseConnection;
-import cottontex.graphdep.database.queries.SQLQueries;
+import cottontex.graphdep.constants.SQLQueries;
 import cottontex.graphdep.models.UserStatus;
 import cottontex.graphdep.models.WorkHourEntry;
 import cottontex.graphdep.utils.DateTimeUtils;

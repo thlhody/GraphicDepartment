@@ -1,12 +1,13 @@
 package cottontex.graphdep;
 
+import cottontex.graphdep.constants.AppPathsFXML;
 import cottontex.graphdep.views.BasePage;
 
 public class Launcher extends BasePage {
 
     @Override
     protected String getFxmlPath() {
-        return "/cottontex/graphdep/fxml/LauncherLayout.fxml";
+        return AppPathsFXML.LAUNCHER;
     }
 
     @Override

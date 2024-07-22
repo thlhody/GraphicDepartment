@@ -1,7 +1,7 @@
 package cottontex.graphdep.database.queries.admin;
 
 import cottontex.graphdep.database.BaseDatabase;
-import cottontex.graphdep.database.queries.SQLQueries;
+import cottontex.graphdep.constants.SQLQueries;
 import cottontex.graphdep.utils.LoggerUtility;
 
 import java.sql.*;

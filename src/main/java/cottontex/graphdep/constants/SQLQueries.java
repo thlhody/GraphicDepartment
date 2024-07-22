@@ -1,4 +1,4 @@
-package cottontex.graphdep.database.queries;
+package cottontex.graphdep.constants;
 
 public class SQLQueries {
 
