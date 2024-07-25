@@ -21,6 +21,11 @@ fx:controller="cottontex.graphdep.controllers.admin.AdminMonthlyTimeController">
         <Button onAction="#onBackToAdminPageClick" text="Back to Admin Page"/>
     </HBox>
 
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <DatePicker fx:id="holidayDatePicker"/>
+        <Button onAction="#onAddNationalHolidayClick" text="Add National Holiday"/>
+    </HBox>
+
     <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true">
         <TableView fx:id="scheduleTable"/>
     </ScrollPane>

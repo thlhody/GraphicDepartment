@@ -27,6 +27,7 @@
                 <Button fx:id="endButton" onAction="#onEndButtonClick" style="-fx-background-color: #FF6347; -fx-text-fill: white;" text="End" />
             </HBox>
             <Button onAction="#viewWorkTable" style="-fx-background-color: #4682B4; -fx-text-fill: white;" text="View My Work Hours" />
+            <Button fx:id="timeOffButton" onAction="#onTimeOffButtonClick" style="-fx-background-color: #8A2BE2; -fx-text-fill: white;" text="Request Time Off" />
         </VBox>
     </center>
 

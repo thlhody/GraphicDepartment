@@ -12,18 +12,20 @@ public class WorkHourEntry {
     private LocalTime breaksTime;
     private LocalDateTime endTime;
     private LocalTime totalWorkedTime;
+    private String timeOffType;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // Constructor
-    public WorkHourEntry(LocalDate date, LocalDateTime startTime, Integer breaks, LocalTime breaksTime, LocalDateTime endTime, LocalTime totalWorkedTime) {
+    public WorkHourEntry(LocalDate date, LocalDateTime startTime, Integer breaks, LocalTime breaksTime, LocalDateTime endTime, LocalTime totalWorkedTime, String timeOffType) {
         this.date = date;
         this.startTime = startTime;
         this.breaks = breaks;
         this.breaksTime = breaksTime;
         this.endTime = endTime;
         this.totalWorkedTime = totalWorkedTime;
+        this.timeOffType = timeOffType;
     }
 
     public String getDate() {
@@ -34,7 +36,9 @@ public class WorkHourEntry {
         return startTime != null ? startTime.toLocalTime().format(TIME_FORMATTER) : "N/A";
     }
 
-    public int getBreaks() { return breaks; }
+    public Integer getBreaks() {
+        return breaks != null ? breaks : 0;
+    }
 
     public String getBreaksTime() {
         return breaksTime != null ? breaksTime.format(TIME_FORMATTER) : "N/A";
@@ -45,6 +49,13 @@ public class WorkHourEntry {
     }
 
     public String getTotalWorkedTime() {
+        return totalWorkedTime != null ? totalWorkedTime.format(TIME_FORMATTER) : "N/A";
+    }
+
+    public String getTotalWorkedTimeForDisplay() {
+        if (timeOffType != null && !timeOffType.isEmpty()) {
+            return timeOffType;
+        }
         return totalWorkedTime != null ? totalWorkedTime.format(TIME_FORMATTER) : "N/A";
     }
 }

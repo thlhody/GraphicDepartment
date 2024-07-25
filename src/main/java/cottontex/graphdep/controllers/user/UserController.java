@@ -1,5 +1,6 @@
 package cottontex.graphdep.controllers.user;
 
+import cottontex.graphdep.constants.AppPathsFXML;
 import cottontex.graphdep.controllers.BaseController;
 import cottontex.graphdep.database.queries.user.ScheduleUserTable;
 import cottontex.graphdep.utils.DateTimeUtils;
@@ -26,6 +27,7 @@ public class UserController extends BaseController {
     @FXML private Button logoutButton;
     @FXML private Button myAccountButton;
     @FXML private ImageView logoImage;
+    @FXML private Button timeOffButton;
 
     private ScheduleUserTable scheduleUserTable;
 
@@ -160,6 +162,24 @@ public class UserController extends BaseController {
         } catch (IOException e) {
             LoggerUtility.error("Error loading User Monthly Time view", e);
             showAlert("Error", "Unable to load work hours view.");
+        }
+    }
+    @FXML
+    protected void onTimeOffButtonClick() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(AppPathsFXML.TIME_OFF));
+            Parent root = loader.load();
+
+            UserTimeOffController controller = loader.getController();
+            controller.setUserID(userSession.getUserID());
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Time Off Request");
+            stage.show();
+        } catch (IOException e) {
+            LoggerUtility.error("Error loading Time Off view", e);
+            showAlert("Error", "Unable to load Time Off view.");
         }
     }
 }

@@ -3,6 +3,7 @@ package cottontex.graphdep.controllers.user;
 import cottontex.graphdep.controllers.BaseController;
 import cottontex.graphdep.database.queries.user.UserTimeTableHandler;
 import cottontex.graphdep.models.WorkHourEntry;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -42,6 +43,8 @@ public class UserMonthlyTimeController extends BaseController {
         breaksTimeColumn.setCellValueFactory(new PropertyValueFactory<>("breaksTime"));
         endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
         totalWorkedTimeColumn.setCellValueFactory(new PropertyValueFactory<>("totalWorkedTime"));
+        totalWorkedTimeColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTotalWorkedTimeForDisplay()));
 
         workHoursTable.setItems(FXCollections.observableArrayList(workHours));
     }

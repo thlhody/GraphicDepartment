@@ -22,10 +22,16 @@ import java.util.Objects;
 
 public class AdminMonthlyTimeController extends BaseController {
 
-    @FXML private ComboBox<Integer> yearComboBox;
-    @FXML private ComboBox<Integer> monthComboBox;
-    @FXML private Button exportToExcelButton;
-    @FXML private TableView<WorkScheduleEntry> scheduleTable;
+    @FXML
+    private ComboBox<Integer> yearComboBox;
+    @FXML
+    private ComboBox<Integer> monthComboBox;
+    @FXML
+    private Button exportToExcelButton;
+    @FXML
+    private TableView<WorkScheduleEntry> scheduleTable;
+    @FXML
+    private DatePicker holidayDatePicker;
 
     private AdminScheduleHandler adminScheduleHandler = new AdminScheduleHandler();
 
@@ -34,9 +40,10 @@ public class AdminMonthlyTimeController extends BaseController {
         initializeComboBoxes();
         TableUtils.setupTableColumns(scheduleTable);
         scheduleTable.setFixedCellSize(25);
-        scheduleTable.setPrefHeight(scheduleTable.getFixedCellSize()*22.5);
+        scheduleTable.setPrefHeight(scheduleTable.getFixedCellSize() * 22.5);
         scheduleTable.getStyleClass().add("alternating-row-colors");
         scheduleTable.getStylesheets().add(Objects.requireNonNull(getClass().getResource(AppPathsCSS.TABLE_STYLES_A)).toExternalForm());
+        holidayDatePicker.setValue(LocalDate.now());
 
     }
 
@@ -99,6 +106,24 @@ public class AdminMonthlyTimeController extends BaseController {
         } catch (IOException e) {
             LoggerUtility.error("Error exporting to Excel", e);
             showAlert("Error", "Failed to export Excel file. Please try again.");
+        }
+    }
+
+    @FXML
+    protected void onAddNationalHolidayClick() {
+        LocalDate selectedDate = holidayDatePicker.getValue();
+
+        if (selectedDate != null) {
+            System.out.println("Calling saveNationalHoliday with date: " + selectedDate);
+            boolean success = adminScheduleHandler.saveNationalHoliday(selectedDate);
+            if (success) {
+                showAlert("Success", "National holiday added successfully for all users on " + selectedDate.toString());
+                onViewMonthlyWorkHoursClick(); // Refresh the table
+            } else {
+                showAlert("Information", "National holiday already exists for " + selectedDate.toString() + ". No changes were made.");
+            }
+        } else {
+            showAlert("Error", "Please select a date for the national holiday.");
         }
     }
 

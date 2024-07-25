@@ -43,19 +43,22 @@ public class UserTimeTableHandler extends BaseDatabase {
     public List<WorkHourEntry> getUserMonthlyWorkHours(Integer userId) {
         List<WorkHourEntry> workHours = new ArrayList<>();
 
-        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(SQLQueries.GET_MONTHLY_WORK_HOURS_USER)) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(SQLQueries.GET_MONTHLY_WORK_HOURS_USER)) {
 
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
+                String timeOffType = rs.getString("time_off_type");
                 WorkHourEntry entry = new WorkHourEntry(
-                        rs.getDate("work_date").toLocalDate(),
-                        rs.getTimestamp("first_start_time").toLocalDateTime(),
-                        rs.getInt("breaks"),
-                        rs.getTime("breaks_time").toLocalTime(),
-                        rs.getTimestamp("end_time").toLocalDateTime(),
-                        rs.getTime("total_worked_time").toLocalTime()
+                        rs.getDate("work_date") != null ? rs.getDate("work_date").toLocalDate() : null,
+                        timeOffType == null ? (rs.getTimestamp("first_start_time") != null ? rs.getTimestamp("first_start_time").toLocalDateTime() : null) : null,
+                        timeOffType == null ? rs.getInt("breaks") : null,
+                        timeOffType == null ? (rs.getTime("breaks_time") != null ? rs.getTime("breaks_time").toLocalTime() : null) : null,
+                        timeOffType == null ? (rs.getTimestamp("end_time") != null ? rs.getTimestamp("end_time").toLocalDateTime() : null) : null,
+                        timeOffType == null ? (rs.getTime("total_worked_time") != null ? rs.getTime("total_worked_time").toLocalTime() : null) : null,
+                        timeOffType
                 );
                 workHours.add(entry);
             }
