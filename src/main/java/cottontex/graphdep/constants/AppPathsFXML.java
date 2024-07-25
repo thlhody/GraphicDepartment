@@ -8,6 +8,5 @@ public class AppPathsFXML {
     public static final String ADMIN_PAGE_LAYOUT = "/cottontex/graphdep/fxml/admin/AdminPageLayout.fxml";
     public static final String USER_PAGE_LAYOUT = "/cottontex/graphdep/fxml/user/UserPageLayout.fxml";
     public static final String LAUNCHER = "/cottontex/graphdep/fxml/LauncherLayout.fxml";
-    public static final String MAIN_VIEW = "/path/to/your/main_view.fxml";
 
 }
