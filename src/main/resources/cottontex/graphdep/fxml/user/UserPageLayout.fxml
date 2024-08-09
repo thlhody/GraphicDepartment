@@ -5,29 +5,31 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cottontex.graphdep.controllers.user.UserController">
+<BorderPane prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/17.0.2-ea"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="cottontex.graphdep.controllers.user.UserController"
+            stylesheets="@../../css/user-styles.css, @../../css/header-styles.css">
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10;">
-            <ImageView fx:id="logoImage" fitWidth="100" fitHeight="100" preserveRatio="true"/>
+        <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header">
+            <ImageView fx:id="logoImage" styleClass="logo-image"/>
+            <Label text="User Dashboard" styleClass="dashboard-title"/>
             <Region HBox.hgrow="ALWAYS" />
-            <Label fx:id="welcomeLabel" style="-fx-text-fill: Black; -fx-font-size: 18px;" />
-            <Button fx:id="myAccountButton" onAction="#onMyAccountButtonClick" text="My Account" prefWidth="100" />
-            <Button fx:id="logoutButton" onAction="#onLogoutButtonClick" text="Logout" prefWidth="100" />
+            <Label fx:id="welcomeLabel" styleClass="welcome-label" />
+            <Button fx:id="myAccountButton" onAction="#onMyAccountButtonClick" text="My Account" styleClass="nav-button" />
+            <Button fx:id="logoutButton" onAction="#onLogoutButtonClick" text="Logout" styleClass="nav-button" />
         </HBox>
     </top>
 
     <center>
-        <VBox alignment="CENTER" spacing="20">
-            <HBox alignment="CENTER" spacing="20">
-                <Label fx:id="displayTimeInfo" style="-fx-font-weight: bold; -fx-font-size: 24;" />
+        <VBox alignment="CENTER" spacing="20" styleClass="main-content">
+            <Label fx:id="displayTimeInfo" styleClass="time-display" />
+            <HBox alignment="CENTER" spacing="15">
+                <Button fx:id="startButton" onAction="#onStartButtonClick" text="Start" />
+                <Button fx:id="pauseButton" onAction="#onPauseButtonClick" text="Pause" />
+                <Button fx:id="endButton" onAction="#onEndButtonClick" text="End" />
             </HBox>
-            <HBox alignment="CENTER" spacing="10">
-                <Button fx:id="startButton" onAction="#onStartButtonClick" style="-fx-background-color: #90EE90; -fx-text-fill: black;" text="Start" />
-                <Button fx:id="pauseButton" onAction="#onPauseButtonClick" style="-fx-background-color: #FFFF00; -fx-text-fill: black;" text="Pause" />
-                <Button fx:id="endButton" onAction="#onEndButtonClick" style="-fx-background-color: #FF6347; -fx-text-fill: white;" text="End" />
-            </HBox>
-            <Button onAction="#viewWorkTable" style="-fx-background-color: #4682B4; -fx-text-fill: white;" text="View My Work Hours" />
-            <Button fx:id="timeOffButton" onAction="#onTimeOffButtonClick" style="-fx-background-color: #8A2BE2; -fx-text-fill: white;" text="Request Time Off" />
+            <Button fx:id="workTableButton" onAction="#onViewWorkTableButtonClick" text="View My Work Hours"/>
         </VBox>
     </center>
 

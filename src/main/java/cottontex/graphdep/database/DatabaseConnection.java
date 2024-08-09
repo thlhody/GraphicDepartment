@@ -24,9 +24,9 @@ public class DatabaseConnection {
             config.setConnectionTimeout(30000);
 
             dataSource = new HikariDataSource(config);
-            LoggerUtility.info("HikariCP connection pool initialized!");
+            //LoggerUtility.info("HikariCP connection pool initialized!");
         } catch (Exception e) {
-            LoggerUtility.error("Failed to initialize HikariCP: " + e.getMessage());
+            //LoggerUtility.error("Failed to initialize HikariCP: " + e.getMessage());
             throw new RuntimeException("Failed to initialize database connection pool", e);
         }
     }

@@ -1,34 +1,34 @@
 package cottontex.graphdep.controllers.user;
 
-import cottontex.graphdep.controllers.BaseController;
-import cottontex.graphdep.database.queries.admin.UserManagementHandler;
-import cottontex.graphdep.utils.LoggerUtility;
+import cottontex.graphdep.constants.AppPathsFXML;
+import cottontex.graphdep.models.UserSession;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import lombok.Setter;
 
-import java.io.IOException;
-
-public class SettingsUserController extends BaseController {
+public class SettingsUserController extends UserBaseController {
 
     @FXML private PasswordField currentPasswordField;
     @FXML private PasswordField newPasswordField;
     @FXML private PasswordField confirmPasswordField;
     @FXML private Label statusLabel;
 
-    private UserManagementHandler userManagementHandler = new UserManagementHandler();
+    @FXML
+    public void initialize() {
+        super.setupLogo();
+        initializeDependencies();
+    }
 
-    @Setter private Integer userID; // You need to set this when loading the page
+    @Override
+    protected void initializeControllerDependencies() {
+        // If there are any SettingsUserController-specific dependencies, initialize them here
+    }
 
     @FXML
     protected void onChangePasswordClick() {
-        System.out.println("Attempting to change password for user ID: " + userID); // Debug print
+        System.out.println("Attempting to change password for user ID: " + userSession.getUserId()); // Debug print
 
         String currentPassword = currentPasswordField.getText();
         String newPassword = newPasswordField.getText();
@@ -44,7 +44,7 @@ public class SettingsUserController extends BaseController {
             return;
         }
 
-        boolean success = userManagementHandler.changePassword(userID, currentPassword, newPassword);
+        boolean success = userManagementHandler.changePassword(userSession.getUserId(), currentPassword, newPassword);
         if (success) {
             setStatusMessage("Password changed successfully", true);
             clearFields();
@@ -64,31 +64,13 @@ public class SettingsUserController extends BaseController {
         confirmPasswordField.clear();
     }
     @FXML
-    protected void onCloseClick() {
+    protected void onBackToUserPageClick() {
         Stage stage = (Stage) statusLabel.getScene().getWindow();
-        stage.close();
-    }
-
-    public static void openSettingsWindow(Integer userID) {
-        try {
-            FXMLLoader loader = new FXMLLoader(SettingsUserController.class.getResource("/cottontex/graphdep/fxml/user/SettingsUserLayout.fxml"));
-            Parent root = loader.load();
-
-            SettingsUserController controller = loader.getController();
-            controller.setUserID(userID);
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("User Settings");
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-        } catch (IOException e) {
-            LoggerUtility.error(e.getMessage());
-        }
+        loadPage(stage, AppPathsFXML.USER_PAGE_LAYOUT, "User Page", UserSession.getInstance());
     }
 
     @Override
-    public void initializeUserData() {
-
+    protected Scene getScene() {
+        return null;
     }
 }

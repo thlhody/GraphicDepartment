@@ -51,12 +51,6 @@ public final class DateTimeUtils {
         return String.format("%d:%02d", hours, minutes);
     }
 
-    public static int calculateTotalMinutes(Map<Integer, String> dailyData) {
-        return dailyData.values().stream()
-                .mapToInt(DateTimeUtils::calculateMinutes)
-                .sum();
-    }
-
     public static String getCurrentDateTimeForDisplay() {
         LocalDateTime now = LocalDateTime.now();
         return now.format(DISPLAY_FORMATTER);

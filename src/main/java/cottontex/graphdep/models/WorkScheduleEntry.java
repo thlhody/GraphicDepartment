@@ -2,14 +2,11 @@ package cottontex.graphdep.models;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import lombok.Getter;
-import lombok.Setter;
+
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
-@Setter
 public class WorkScheduleEntry {
     private final StringProperty name;
     private final Map<Integer, StringProperty> days;
@@ -43,4 +40,5 @@ public class WorkScheduleEntry {
     public void setTotal(String value) {
         total.set(value);
     }
+
 }

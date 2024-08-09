@@ -1,27 +1,32 @@
 package cottontex.graphdep.controllers.admin;
 
 import cottontex.graphdep.constants.AppPathsFXML;
-import cottontex.graphdep.controllers.BaseController;
 import cottontex.graphdep.database.queries.admin.UserManagementHandler;
+import cottontex.graphdep.models.UserSession;
+import cottontex.graphdep.utils.LoggerUtility;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class SettingsAdminController extends BaseController {
+public class SettingsAdminController extends AdminBaseController {
 
     @FXML private TextField nameField;
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private ComboBox<String> userComboBox;
-
+    @FXML private Button backButton;
 
     private UserManagementHandler userManagementHandler = new UserManagementHandler();
 
     @FXML
     public void initialize() {
-        refreshUserComboBox();
-
+        LoggerUtility.info("Initializing SettingsAdminController");
+        super.setupLogo();
     }
 
     private void refreshUserComboBox() {
@@ -83,19 +88,20 @@ public class SettingsAdminController extends BaseController {
         }
     }
 
-    @FXML
-    protected void onBackButtonClick() {
-        loadPage((Stage) nameField.getScene().getWindow(), AppPathsFXML.ADMIN_PAGE_LAYOUT, "Admin Page");
-    }
 
     private void clearFields() {
         nameField.clear();
         usernameField.clear();
         passwordField.clear();
     }
+    @FXML
+    protected void onBackButtonClick() {
+        Stage stage = (Stage) backButton.getScene().getWindow();
+        loadPage(stage, AppPathsFXML.ADMIN_PAGE_LAYOUT, "Admin Page", userSession);
+    }
 
     @Override
-    public void initializeUserData() {
-
+    protected Scene getScene() {
+        return null;
     }
 }

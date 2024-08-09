@@ -6,26 +6,26 @@
 <?import javafx.scene.image.ImageView?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="cottontex.graphdep.controllers.LauncherController">
-    <top>
-        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10;">
-            <ImageView fx:id="logoImage" fitWidth="100" fitHeight="100" preserveRatio="true"/>
-        </HBox>
-    </top>
-
+           fx:controller="cottontex.graphdep.controllers.LauncherController"
+           stylesheets="@../css/launcher-styles.css, @../css/header-styles.css">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20" />
+    </padding>
     <center>
-        <VBox alignment="CENTER" spacing="20.0">
-            <padding>
-                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-            </padding>
-
-            <Label style="-fx-text-fill: Black; -fx-font-size: 18px;" text="Login" />
-            <Label fx:id="errorMessageLabel" style="-fx-text-fill: Red;" />
-
-            <VBox spacing="10" alignment="CENTER" maxWidth="200">
-                <TextField fx:id="usernameField" promptText="Username" />
-                <PasswordField fx:id="passwordField" promptText="Password" />
-                <Button fx:id="loginButton" text="Login" onAction="#onLoginButtonClick" prefWidth="100" />
+        <VBox spacing="20" styleClass="main-content">
+            <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header">
+                <ImageView fx:id="logoImage" styleClass="logo-image"/>
+                <Label styleClass="dashboard-title" text="Creative Time And Task Tracker" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="aboutButton" text="About" onAction="#onAboutButtonClick" styleClass="nav-button"/>
+            </HBox>
+            <VBox alignment="CENTER" spacing="20.0">
+                <ImageView fx:id="mainImage" />
+                <VBox spacing="10" alignment="CENTER" maxWidth="200">
+                    <TextField fx:id="usernameField" promptText="Username" />
+                    <PasswordField fx:id="passwordField" promptText="Password" />
+                    <Button fx:id="loginButton" text="Login" onAction="#onLoginButtonClick" prefWidth="100" styleClass="login-button" />
+                </VBox>
             </VBox>
         </VBox>
     </center>

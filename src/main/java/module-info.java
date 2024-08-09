@@ -11,21 +11,45 @@ module cottontex.graphdep {
     requires com.zaxxer.hikari;
     requires mysql.connector.j;
 
+
     opens cottontex.graphdep to javafx.fxml;
     exports cottontex.graphdep;
+
     opens cottontex.graphdep.controllers to javafx.fxml;
     exports cottontex.graphdep.controllers;
-    exports cottontex.graphdep.database;
-    opens cottontex.graphdep.database to javafx.fxml;
-    exports cottontex.graphdep.utils;
-    opens cottontex.graphdep.utils to javafx.fxml;
-    exports cottontex.graphdep.views;
-    opens cottontex.graphdep.views to javafx.fxml;
+
     opens cottontex.graphdep.controllers.admin to javafx.fxml;
     exports cottontex.graphdep.controllers.admin;
-    exports cottontex.graphdep.controllers.user;
+
+    opens cottontex.graphdep.controllers.info to javafx.fxml;
+    exports cottontex.graphdep.controllers.info;
+
+    opens cottontex.graphdep.controllers.common to javafx.fxml;
+    exports cottontex.graphdep.controllers.common;
+
     opens cottontex.graphdep.controllers.user to javafx.fxml;
-    exports cottontex.graphdep.models;
+    exports cottontex.graphdep.controllers.user;
+
+    opens cottontex.graphdep.database to javafx.fxml;
+    exports cottontex.graphdep.database;
+
+    opens cottontex.graphdep.database.queries.admin to javafx.fxml;
+    exports cottontex.graphdep.database.queries.admin;
+
+    opens cottontex.graphdep.database.queries.user to javafx.fxml;
+    exports cottontex.graphdep.database.queries.user;
+
     opens cottontex.graphdep.models to javafx.base, javafx.fxml;
+    exports cottontex.graphdep.models;
+
+    opens cottontex.graphdep.utils to javafx.fxml;
+    exports cottontex.graphdep.utils;
+
+    exports cottontex.graphdep.views;
+    opens cottontex.graphdep.views to javafx.fxml;
+
+    exports cottontex.graphdep.database.queries;
+    opens cottontex.graphdep.database.queries to javafx.fxml;
+
 
 }

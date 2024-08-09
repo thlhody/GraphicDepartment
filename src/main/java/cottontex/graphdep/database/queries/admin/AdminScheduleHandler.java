@@ -5,6 +5,7 @@ import cottontex.graphdep.constants.SQLQueries;
 import cottontex.graphdep.utils.LoggerUtility;
 
 import java.sql.*;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -43,68 +44,118 @@ public class AdminScheduleHandler extends BaseDatabase {
         return result;
     }
 
-    public boolean saveNationalHoliday(LocalDate date) {
+    public static class HolidaySaveResult {
+        public final boolean success;
+        public final LocalDate savedDate;
+        public final String message;
 
-        String checkExistingSql = "SELECT COUNT(*) FROM work_interval WHERE DATE(first_start_time) = ? AND time_off_type = 'NH'";
-        String selectUsersSql = "SELECT user_id FROM users WHERE role != 'admin'";
-        String insertHolidaySql = "INSERT INTO work_interval (user_id, first_start_time, end_time, total_worked_time, time_off_type) " +
-                "SELECT ?, ?, ?, '00:00:00', 'NH' " +
-                "WHERE NOT EXISTS (SELECT 1 FROM work_interval WHERE user_id = ? AND DATE(first_start_time) = ? AND time_off_type = 'NH')";
+        public HolidaySaveResult(boolean success, LocalDate savedDate, String message) {
+            this.success = success;
+            this.savedDate = savedDate;
+            this.message = message;
+        }
+
+        public boolean isSuccess() {
+            return false;
+        }
+
+        public boolean isDuplicate() {
+            return false;
+        }
+    }
+
+    public HolidaySaveResult saveNationalHoliday(LocalDate date) {
+        LocalDate actualDate = adjustToWorkingDay(date);
+
+        if (isExistingTimeOff(actualDate)) {
+            return new HolidaySaveResult(false, null, "Cannot add national holiday. CO or CM already exists for " + actualDate);
+        }
+
+        if (isExistingHoliday(actualDate)) {
+            return new HolidaySaveResult(false, null, "National holiday already exists for " + actualDate);
+        }
 
         try (Connection conn = getConnection()) {
             conn.setAutoCommit(false);
 
-            // Check if holiday already exists for this date
-            try (PreparedStatement checkStmt = conn.prepareStatement(SQLQueries.CHECK_EXISTING_SQL)) {
-                checkStmt.setDate(1, java.sql.Date.valueOf(date));
-                ResultSet rs = checkStmt.executeQuery();
-                if (rs.next() && rs.getInt(1) > 0) {
-                    return false; // Holiday already exists, no need to insert
-                }
-            }
+            int insertedCount = insertHoliday(conn, actualDate);
 
-            try (PreparedStatement selectStmt = conn.prepareStatement(SQLQueries.SELECT_USERS_SQL);
-                 PreparedStatement insertStmt = conn.prepareStatement(SQLQueries.INSERT_HOLIDAY_SQL)) {
+            conn.commit();
 
-                ResultSet rs = selectStmt.executeQuery();
-
-                Timestamp startTime = Timestamp.valueOf(date.atStartOfDay());
-                Timestamp endTime = Timestamp.valueOf(date.atTime(23, 59, 59));
-
-                int count = 0;
-                while (rs.next()) {
-                    int userId = rs.getInt("user_id");
-                    insertStmt.setInt(1, userId);
-                    insertStmt.setTimestamp(2, startTime);
-                    insertStmt.setTimestamp(3, endTime);
-                    insertStmt.setInt(4, userId);
-                    insertStmt.setDate(5, java.sql.Date.valueOf(date));
-                    insertStmt.addBatch();
-                    count++;
-                }
-                System.out.println("Prepared batch insert for " + count + " users");
-
-                int[] results = insertStmt.executeBatch();
-                conn.commit();
-
-                int insertedCount = 0;
-                for (int result : results) {
-                    if (result > 0) insertedCount++;
-                }
-                System.out.println("Inserted " + insertedCount + " new holiday entries for date: " + date);
-                return insertedCount > 0;
-            } catch (SQLException e) {
-                conn.rollback();
-                System.out.println("Error occurred, rolling back transaction");
-                e.printStackTrace();
-                throw e;
-            } finally {
-                conn.setAutoCommit(true);
+            if (insertedCount > 0) {
+                String message = date.equals(actualDate)
+                        ? "National holiday added successfully for " + actualDate
+                        : "National holiday adjusted and added for " + actualDate + " (next working day)";
+                return new HolidaySaveResult(true, actualDate, message);
+            } else {
+                return new HolidaySaveResult(false, null, "No new holiday entries were inserted for " + actualDate);
             }
         } catch (SQLException e) {
             LoggerUtility.error("Error saving national holiday for date: " + date, e);
-            e.printStackTrace();
-            return false;
+            return new HolidaySaveResult(false, null, "Error occurred while saving national holiday: " + e.getMessage());
         }
     }
+
+    private LocalDate adjustToWorkingDay(LocalDate date) {
+        LocalDate adjustedDate = date;
+        while (adjustedDate.getDayOfWeek() == DayOfWeek.SATURDAY || adjustedDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            adjustedDate = adjustedDate.plusDays(1);
+        }
+        return adjustedDate;
+    }
+
+    private boolean isExistingTimeOff(LocalDate date) {
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQLQueries.CHECK_EXISTING_TIME_OFF_SQL)) {
+            stmt.setDate(1, java.sql.Date.valueOf(date));
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            LoggerUtility.error(e.getMessage());
+        }
+        return false;
+    }
+
+    private boolean isExistingHoliday(LocalDate date) {
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SQLQueries.CHECK_EXISTING_SQL)) {
+            stmt.setDate(1, java.sql.Date.valueOf(date));
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            LoggerUtility.error(e.getMessage());
+        }
+        return false;
+    }
+
+    private int insertHoliday(Connection conn, LocalDate date) {
+        try (PreparedStatement selectStmt = conn.prepareStatement(SQLQueries.SELECT_USERS_SQL);
+             PreparedStatement insertStmt = conn.prepareStatement(SQLQueries.INSERT_HOLIDAY_SQL)) {
+
+            ResultSet rs = selectStmt.executeQuery();
+
+            Timestamp startTime = Timestamp.valueOf(date.atStartOfDay());
+            Timestamp endTime = Timestamp.valueOf(date.atTime(23, 59, 59));
+
+            int count = 0;
+            while (rs.next()) {
+                int userId = rs.getInt("user_id");
+                insertStmt.setInt(1, userId);
+                insertStmt.setTimestamp(2, startTime);
+                insertStmt.setTimestamp(3, endTime);
+                insertStmt.setInt(4, userId);
+                insertStmt.setDate(5, java.sql.Date.valueOf(date));
+                insertStmt.addBatch();
+                count++;
+            }
+            System.out.println("Prepared batch insert for " + count + " users");
+
+            int[] results = insertStmt.executeBatch();
+            return Arrays.stream(results).sum();
+        } catch (SQLException e) {
+            LoggerUtility.error(e.getMessage());
+        }
+        return 0;
+    }
+
 }

@@ -1,12 +1,22 @@
 package cottontex.graphdep.models;
 
+import cottontex.graphdep.utils.LoggerUtility;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class UserSession {
+
+    @Setter
     private static UserSession instance;
-    private Integer userID;
+    private Integer userId;
     private String username;
     private String role;
 
-    private UserSession() {}
+    public UserSession() {
+
+    }
 
     public static UserSession getInstance() {
         if (instance == null) {
@@ -15,11 +25,18 @@ public class UserSession {
         return instance;
     }
 
-    // Getters and setters
-    public Integer getUserID() { return userID; }
-    public void setUserID(Integer userID) { this.userID = userID; }
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public static void clearInstance() {
+        instance = null;
+    }
+
+    public boolean isAdmin() {
+        boolean isAdmin = "ADMIN".equals(this.role);
+        LoggerUtility.info("Checking if user is admin: " + isAdmin + " (role: " + this.role + ")");
+        return isAdmin;
+    }
+    public boolean isUser() {
+        boolean isUser = "USER".equals(this.role);
+        LoggerUtility.info("Checking if user is user: " + isUser + " (role: " + this.role + ")");
+        return isUser;
+    }
 }

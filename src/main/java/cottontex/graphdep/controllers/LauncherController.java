@@ -1,12 +1,14 @@
 package cottontex.graphdep.controllers;
 
 import cottontex.graphdep.constants.AppPathsFXML;
+import cottontex.graphdep.controllers.common.BaseController;
+import cottontex.graphdep.controllers.info.AboutDialogController;
 import cottontex.graphdep.database.queries.UserLogin;
 import cottontex.graphdep.models.UserSession;
+import cottontex.graphdep.utils.DependencyFactory;
+import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -14,52 +16,67 @@ import javafx.stage.Stage;
 
 public class LauncherController extends BaseController {
 
-    @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
-    @FXML private Label errorMessageLabel;
-    @FXML private Button loginButton;
-    @FXML private ImageView logoImage;
-
-    private UserLogin userLogin = new UserLogin();
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private ImageView logoImage;
+    @FXML
+    private Button aboutButton;
 
     @FXML
     public void initialize() {
-        setupLogo();
+        super.setupLogo();
+        setupMainImage();
     }
 
     @FXML
     protected void onLoginButtonClick() {
+        DependencyFactory dependencyFactory = DependencyFactory.getInstance();
+        UserLogin userLogin = dependencyFactory.createUserLogin();
+        LoggerUtility.info("UserLogin: "+ userLogin);
         String username = usernameField.getText();
         String password = passwordField.getText();
         String role = userLogin.authenticateUser(username, password);
 
         if (role != null) {
-            int userID = userLogin.getUserID(username);
-            UserSession session = UserSession.getInstance();
-            session.setUserID(userID);
-            session.setUsername(username);
-            session.setRole(role);
-
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            String fxmlPath = role.equals("ADMIN") ? AppPathsFXML.ADMIN_PAGE_LAYOUT : AppPathsFXML.USER_PAGE_LAYOUT;
-            String title = role.equals("ADMIN") ? "Admin Page" : "User Page";
-
-            FXMLLoader loader = loadPage(stage, fxmlPath, title);
-
-            if (loader != null) {
-                BaseController controller = loader.getController();
-                controller.initializeUserData();
-            } else {
-                showError(errorMessageLabel, "Error loading page.");
+            LoggerUtility.info("User authenticated successfully: " + username + ", Role: " + role);
+            Integer userId = userLogin.getUserID(username);
+            if (userId == null) {
+                LoggerUtility.error("Failed to retrieve user ID for: " + username);
+                showAlert("Login Error", "Failed to retrieve user information.");
+                return;
             }
+
+            // Initialize and set UserSession with complete information
+            UserSession userSession = new UserSession();
+            userSession.setUserId(userId);
+            userSession.setUsername(username);
+            userSession.setRole(role);
+            UserSession.setInstance(userSession);
+
+            LoggerUtility.info("UserSession created: " + userSession + ", Role: " + userSession.getRole());
+
+            Stage stage = (Stage) usernameField.getScene().getWindow();
+            String fxmlPath = "ADMIN".equals(role) ? AppPathsFXML.ADMIN_PAGE_LAYOUT : AppPathsFXML.USER_PAGE_LAYOUT;
+            LoggerUtility.info("Loading FXML: " + fxmlPath + " for role: " + role);
+
+            loadPage(stage, fxmlPath, "ADMIN".equals(role) ? "Admin Page" : "User Page", UserSession.getInstance());
         } else {
-            showError(errorMessageLabel, "Incorrect username or password!");
+            showAlert("Login Error", "Invalid username or password.");
         }
     }
 
-    @Override
-    public void initializeUserData() {
-        // This method is not needed for LauncherController
-        // but we need to implement it to satisfy the abstract method in BaseController
+    @FXML
+    protected void onAboutButtonClick() {
+        Stage aboutStage = createCustomDialog(AppPathsFXML.ABOUT_DIALOG, "About", AboutDialogController.class);
+        if (aboutStage != null) {
+            AboutDialogController controller = (AboutDialogController) aboutStage.getScene().getUserData();
+            controller.setContent("Creative Time And Task Tracker", "Version 1.0", "© 2024 thlhody");
+            aboutStage.showAndWait();
+        } else {
+            LoggerUtility.error("Failed to create About dialog");
+        }
     }
 }

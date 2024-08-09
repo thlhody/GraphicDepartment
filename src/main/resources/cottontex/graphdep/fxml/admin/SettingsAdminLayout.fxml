@@ -2,32 +2,41 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="cottontex.graphdep.controllers.admin.SettingsAdminController">
+<BorderPane prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/17.0.2-ea"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="cottontex.graphdep.controllers.admin.SettingsAdminController"
+            stylesheets="@../../css/admin-styles.css, @../../css/header-styles.css">
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+        <Insets top="20" right="20" bottom="20" left="20" />
     </padding>
-
-    <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Settings" />
-
-    <VBox spacing="10.0" style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 10;">
-        <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="User Management" />
-
-        <HBox spacing="10">
-            <TextField fx:id="nameField" promptText="Name" />
-            <TextField fx:id="usernameField" promptText="Username" />
-            <PasswordField fx:id="passwordField" promptText="Password" />
-            <Button fx:id="addUserButton" onAction="#onAddUserButtonClick" text="Add User" />
-        </HBox>
-
-        <HBox spacing="10">
-            <ComboBox fx:id="userComboBox" promptText="Select User" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
-            <Button fx:id="resetPasswordButton" text="Reset Password" onAction="#onResetPasswordButtonClick" />
-            <Button fx:id="deleteUserButton" text="Delete User" onAction="#onDeleteUserButtonClick" />
-        </HBox>
-    </VBox>
-
-    <Button fx:id="backButton" onAction="#onBackButtonClick" text="Back to Admin Page" />
-</VBox>
+    <center>
+        <VBox spacing="20" styleClass="main-content">
+            <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header">
+                <ImageView fx:id="logoImage" styleClass="logo-image"/>
+                <Label text="Admin Settings" styleClass="dashboard-title"/>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="backButton" onAction="#onBackButtonClick" text="Back to Admin Page" styleClass="nav-button"/>
+            </HBox>
+            <VBox alignment="CENTER" spacing="20">
+                <VBox spacing="10.0" styleClass="settings-section">
+                    <Label styleClass="section-title" text="User Management" />
+                    <HBox spacing="10">
+                        <TextField fx:id="nameField" promptText="Name" />
+                        <TextField fx:id="usernameField" promptText="Username" />
+                        <PasswordField fx:id="passwordField" promptText="Password" />
+                        <Button fx:id="addUserButton" onAction="#onAddUserButtonClick" text="Add User" />
+                    </HBox>
+                    <HBox spacing="10">
+                        <ComboBox fx:id="userComboBox" promptText="Select User" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                        <Button fx:id="resetPasswordButton" text="Reset Password" onAction="#onResetPasswordButtonClick" />
+                        <Button fx:id="deleteUserButton" text="Delete User" onAction="#onDeleteUserButtonClick" />
+                    </HBox>
+                </VBox>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

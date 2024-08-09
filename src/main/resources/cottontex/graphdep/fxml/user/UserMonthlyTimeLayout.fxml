@@ -1,40 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<BorderPane prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/17.0.2-ea"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="cottontex.graphdep.controllers.user.UserMonthlyTimeController"
-            prefHeight="600.0" prefWidth="800.0">
-
+            stylesheets="@../../css/user-styles.css, @../../css/header-styles.css">
     <top>
-        <HBox spacing="10" alignment="CENTER" style="-fx-padding: 10;">
-            <Label text="My Work Hours" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+        <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header">
+            <ImageView fx:id="logoImage" styleClass="logo-image"/>
+            <Label text="My Work Hours and Time Off" styleClass="dashboard-title"/>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Back to Dashboard" onAction="#onBackToUserPageClick" styleClass="nav-button"/>
         </HBox>
     </top>
 
     <center>
-        <TableView fx:id="workHoursTable">
-            <columns>
-                <TableColumn fx:id="dateColumn" text="Date"/>
-                <TableColumn fx:id="startTimeColumn" text="Start Time"/>
-                <TableColumn fx:id="breaksColumn" text="Breaks"/>
-                <TableColumn fx:id="breaksTimeColumn" text="Breaks Time"/>
-                <TableColumn fx:id="endTimeColumn" text="End Time"/>
-                <TableColumn fx:id="totalWorkedTimeColumn" text="Total Worked Time"/>
-            </columns>
-        </TableView>
+        <VBox alignment="CENTER" spacing="20" styleClass="main-content">
+            <TableView fx:id="workHoursTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="dateColumn" text="Date" prefWidth="100"/>
+                    <TableColumn fx:id="startTimeColumn" text="Start" prefWidth="80"/>
+                    <TableColumn fx:id="breaksColumn" text="Breaks" prefWidth="60"/>
+                    <TableColumn fx:id="breaksTimeColumn" text="Break Time" prefWidth="80"/>
+                    <TableColumn fx:id="endTimeColumn" text="End" prefWidth="80"/>
+                    <TableColumn fx:id="totalWorkedTimeColumn" text="Total Time" prefWidth="100"/>
+                </columns>
+            </TableView>
+
+            <VBox spacing="10" styleClass="time-off-section">
+                <Label text="Request Time Off" styleClass="section-title"/>
+                <HBox spacing="10">
+                    <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
+                    <DatePicker fx:id="endDatePicker" promptText="End Date"/>
+                    <ComboBox fx:id="typeComboBox" promptText="Time Off Type"/>
+                    <Button text="Submit Request" onAction="#onSubmitButtonClick" />
+                </HBox>
+            </VBox>
+        </VBox>
     </center>
 
-    <bottom>
-        <HBox spacing="10" alignment="CENTER" style="-fx-padding: 10;">
-            <Button text="Close" onAction="#closeWindow"/>
-        </HBox>
-    </bottom>
-
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 </BorderPane>

@@ -10,6 +10,7 @@ import java.util.List;
 
 public class UserManagementHandler extends BaseDatabase {
 
+
     public boolean addUser(String name, String username, String password) {
         try (Connection conn = getConnection(); PreparedStatement stmt = getPreparedStatement(conn, SQLQueries.ADD_USER)) {
 

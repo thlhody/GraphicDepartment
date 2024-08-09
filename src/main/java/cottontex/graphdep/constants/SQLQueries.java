@@ -19,7 +19,8 @@ public class SQLQueries {
     public static final String GET_MONTHLY_WORK_HOURS_USER =
             "SELECT * FROM work_interval WHERE user_id = ? ORDER BY first_start_time";
 
-    // Time processing queries
+    // Time processing user queries
+
     public static final String SAVE_START_HOUR =
             "INSERT INTO time_processing (user_id, time_a) VALUES (?, ?)";
 
@@ -36,19 +37,23 @@ public class SQLQueries {
 
     public static final String HAS_ACTIVE_SESSION =
             "SELECT 1 FROM time_processing WHERE user_id = ? AND DATE(time_a) = ? AND time_b IS NULL LIMIT 1";
-    // User login queries
-    public static final String ADD_USER =
-            "INSERT INTO users (name, username, password, role) VALUES (?, ?, ?, 'USER')";
-
-    public static final String AUTHENTICATE_USER =
-            "SELECT role FROM users WHERE username = ? AND password = ?";
 
     public static final String TIME_OFF_UPDATE =
             "INSERT INTO work_interval (user_id, first_start_time, end_time, total_worked_time, time_off_type) VALUES (?, ?, ?, ?, ?)";
 
+
+    // User login queries
+
+    public static final String AUTHENTICATE_USER =
+            "SELECT role FROM users WHERE username = ? AND password = ?";
+
     // User management queries
+
     public static final String GET_USER_ID =
             "SELECT user_id FROM users WHERE username = ?";
+
+    public static final String ADD_USER =
+            "INSERT INTO users (name, username, password, role) VALUES (?, ?, ?, 'USER')";
 
     public static final String GET_ALL_USERNAMES =
             "SELECT username FROM users WHERE role != 'ADMIN'";
@@ -63,6 +68,7 @@ public class SQLQueries {
             "UPDATE users SET password = ? WHERE user_id = ? AND password = ?";
 
     // Admin schedule handle queries
+
     public static final String GET_MONTHLY_WORK_DATA =
             "SELECT u.name,\n" +
                     "       DAY(wi.work_date) AS day_number,\n" +
@@ -85,5 +91,5 @@ public class SQLQueries {
 
     public static final String CHECK_EXISTING_SQL = "SELECT COUNT(*) FROM work_interval WHERE DATE(first_start_time) = ? AND time_off_type = 'SN'";
 
-
+    public static final String CHECK_EXISTING_TIME_OFF_SQL = "SELECT COUNT(*) FROM work_interval WHERE DATE(first_start_time) = ? AND (time_off_type = 'CO' OR time_off_type = 'CM')";
 }

@@ -1,0 +1,130 @@
+/* Root style for the entire application */
+.root {
+    -fx-font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    -fx-background-color: #f4f4f4;
+    -fx-text-fill: #333333;
+}
+
+/* Button styles */
+.button {
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 4px;
+}
+
+.primary-button {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+}
+
+.primary-button:hover {
+    -fx-background-color: #218838;
+}
+
+.secondary-button {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #545b62;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #28a745;
+}
+
+.nav-button:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Main content area */
+.main-content {
+    -fx-background-color: white;
+    -fx-padding: 20px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);
+}
+
+.dashboard-welcome {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #343a40;
+}
+
+/* Time display and action buttons */
+.time-display {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #343a40;
+}
+
+.start-button {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+}
+
+.start-button:hover {
+    -fx-background-color: #218838;
+}
+
+.pause-button {
+    -fx-background-color: #ffc107;
+    -fx-text-fill: black;
+}
+
+.pause-button:hover {
+    -fx-background-color: #e0a800;
+}
+
+.end-button {
+    -fx-background-color: #dc3545;
+    -fx-text-fill: white;
+}
+
+.end-button:hover {
+    -fx-background-color: #c82333;
+}
+
+.view-hours-button {
+    -fx-background-color: #17a2b8;
+    -fx-text-fill: white;
+}
+
+.view-hours-button:hover {
+    -fx-background-color: #138496;
+}
+
+.time-off-button {
+    -fx-background-color: #6610f2;
+    -fx-text-fill: white;
+}
+
+.time-off-button:hover {
+    -fx-background-color: #520dc2;
+}
+
+/* Form control styles */
+.date-picker {
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 4px;
+}
+
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 4px;
+}
+
+.text-field {
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 4px;
+}
+
+/* General styles */
+.label {
+    -fx-text-fill: #333333;
+}

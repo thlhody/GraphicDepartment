@@ -2,8 +2,9 @@ package cottontex.graphdep.controllers.admin;
 
 import cottontex.graphdep.constants.AppPathsCSS;
 import cottontex.graphdep.constants.AppPathsFXML;
-import cottontex.graphdep.controllers.BaseController;
+import cottontex.graphdep.controllers.common.BaseController;
 import cottontex.graphdep.database.queries.admin.AdminScheduleHandler;
+import cottontex.graphdep.models.UserSession;
 import cottontex.graphdep.models.WorkScheduleEntry;
 import cottontex.graphdep.utils.TableUtils;
 import cottontex.graphdep.utils.ExportExcelUtils;
@@ -37,6 +38,7 @@ public class AdminMonthlyTimeController extends BaseController {
 
     @FXML
     public void initialize() {
+        super.setupLogo();
         initializeComboBoxes();
         TableUtils.setupTableColumns(scheduleTable);
         scheduleTable.setFixedCellSize(25);
@@ -58,7 +60,7 @@ public class AdminMonthlyTimeController extends BaseController {
 
     @FXML
     protected void onBackToAdminPageClick() {
-        loadPage((Stage) yearComboBox.getScene().getWindow(), AppPathsFXML.ADMIN_PAGE_LAYOUT, "Admin Page");
+        loadPage((Stage) yearComboBox.getScene().getWindow(), AppPathsFXML.ADMIN_PAGE_LAYOUT, "Admin Page", UserSession.getInstance());
     }
 
     @FXML
@@ -70,7 +72,6 @@ public class AdminMonthlyTimeController extends BaseController {
 
         // Remove admin user from the data
         data.remove("Admin");
-
         ObservableList<WorkScheduleEntry> entries = TableUtils.createWorkScheduleEntries(data);
         scheduleTable.setItems(entries);
 
@@ -97,6 +98,35 @@ public class AdminMonthlyTimeController extends BaseController {
         }
     }
 
+    @FXML
+    protected void onAddNationalHolidayClick() {
+        LocalDate selectedDate = holidayDatePicker.getValue();
+
+        if (selectedDate != null) {
+            System.out.println("Calling saveNationalHoliday with date: " + selectedDate);
+            // Assuming saveNationalHoliday returns an instance of HolidaySaveResult
+            AdminScheduleHandler.HolidaySaveResult result = adminScheduleHandler.saveNationalHoliday(selectedDate);
+
+            // Handling the result based on assumed fields or methods
+            // Replace 'isSuccess()' with the actual method or field available in HolidaySaveResult
+            if (result != null) {
+                // Example checks - adapt based on actual API
+                if (result.isSuccess()) {
+                    showAlert("Success", "National holiday added successfully for all users on " + selectedDate.toString());
+                    onViewMonthlyWorkHoursClick(); // Refresh the table
+                } else if (result.isDuplicate()) {
+                    showAlert("Information", "National holiday already exists for " + selectedDate.toString() + ". No changes were made.");
+                } else {
+                    showAlert("Error", "Failed to add national holiday. Please try again.");
+                }
+            } else {
+                showAlert("Error", "Unknown error occurred. Please try again.");
+            }
+        } else {
+            showAlert("Error", "Please select a date for the national holiday.");
+        }
+    }
+
     private void exportToExcel(int year, int month, String filePath) {
         Map<String, Map<Integer, String>> data = adminScheduleHandler.getMonthlyWorkData(year, month);
         data.remove("Admin");
@@ -107,28 +137,5 @@ public class AdminMonthlyTimeController extends BaseController {
             LoggerUtility.error("Error exporting to Excel", e);
             showAlert("Error", "Failed to export Excel file. Please try again.");
         }
-    }
-
-    @FXML
-    protected void onAddNationalHolidayClick() {
-        LocalDate selectedDate = holidayDatePicker.getValue();
-
-        if (selectedDate != null) {
-            System.out.println("Calling saveNationalHoliday with date: " + selectedDate);
-            boolean success = adminScheduleHandler.saveNationalHoliday(selectedDate);
-            if (success) {
-                showAlert("Success", "National holiday added successfully for all users on " + selectedDate.toString());
-                onViewMonthlyWorkHoursClick(); // Refresh the table
-            } else {
-                showAlert("Information", "National holiday already exists for " + selectedDate.toString() + ". No changes were made.");
-            }
-        } else {
-            showAlert("Error", "Please select a date for the national holiday.");
-        }
-    }
-
-    @Override
-    public void initializeUserData() {
-
     }
 }

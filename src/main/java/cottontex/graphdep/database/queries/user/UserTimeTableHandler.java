@@ -1,12 +1,10 @@
 package cottontex.graphdep.database.queries.user;
 
-import cottontex.graphdep.database.BaseDatabase;
-import cottontex.graphdep.database.DatabaseConnection;
-import cottontex.graphdep.constants.SQLQueries;
+import cottontex.graphdep.database.*;
+import cottontex.graphdep.constants.*;
 import cottontex.graphdep.models.UserStatus;
 import cottontex.graphdep.models.WorkHourEntry;
-import cottontex.graphdep.utils.DateTimeUtils;
-import cottontex.graphdep.utils.LoggerUtility;
+import cottontex.graphdep.utils.*;
 
 import java.sql.*;
 import java.util.ArrayList;

@@ -11,10 +11,13 @@ import java.util.List;
 public class UserTimeOffHandler extends BaseDatabase {
 
     public boolean saveTimeOff(Integer userID, List<LocalDate> workDays, String type) {
-        String sql = SQLQueries.TIME_OFF_UPDATE;
+        if(userID == null){
+            LoggerUtility.error("Attempt to save time off with null userID");
+            return false;
+        }
 
         try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQLQueries.TIME_OFF_UPDATE)) {
 
             for (LocalDate date : workDays) {
                 pstmt.setInt(1, userID);

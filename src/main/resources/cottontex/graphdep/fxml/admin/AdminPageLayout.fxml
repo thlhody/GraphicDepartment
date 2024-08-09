@@ -5,28 +5,30 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cottontex.graphdep.controllers.admin.AdminController">
-    <top>
-        <HBox alignment="CENTER_LEFT" spacing="10">
-            <padding>
-                <Insets bottom="10" left="10" right="10" top="10" />
-            </padding>
-            <ImageView fx:id="logoImage" fitWidth="100" fitHeight="100" preserveRatio="true"/>
-            <Region HBox.hgrow="ALWAYS" />
-            <Label fx:id="welcomeLabel" style="-fx-text-fill: Black; -fx-font-size: 18px;" />
-            <Button fx:id="viewMonthlyButton" onAction="#onViewMonthlyTimeClick" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" text="View Monthly Work Hours" />
-            <Button fx:id="settingsButton" onAction="#onSettingsButtonClick" text="Settings" prefWidth="100" />
-            <Button fx:id="logoutButton" onAction="#onLogoutAdminButtonClick" text="Logout" prefWidth="100" />
-        </HBox>
-    </top>
-
-    <left>
-        <ScrollPane fitToWidth="true" prefWidth="250" style="-fx-background-color: transparent;">
-            <VBox fx:id="userStatusBox" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" />
-        </ScrollPane>
-    </left>
-
+<BorderPane prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/17.0.2-ea"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="cottontex.graphdep.controllers.admin.AdminController"
+            stylesheets="@../../css/admin-styles.css, @../../css/header-styles.css">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20" />
+    </padding>
     <center>
-        <StackPane />
+        <VBox spacing="20" styleClass="main-content">
+            <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header">
+                <ImageView fx:id="logoImage" styleClass="logo-image"/>
+                <Label text="Admin Dashboard" styleClass="dashboard-title"/>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="welcomeLabel" styleClass="welcome-label" />
+                <Button fx:id="userStatusButton" text="Users" onAction="#onUserStatusButtonClick" styleClass="nav-button"/>
+                <Button fx:id="viewReportsButton" text="View Reports" onAction="#viewReportsButton" styleClass="nav-button"/>
+                <Button fx:id="settingsButton" text="Settings" onAction="#onSettingsButtonClick" styleClass="nav-button"/>
+                <Button fx:id="logoutButton" text="Logout" onAction="#onLogoutButtonClick" styleClass="nav-button"/>
+            </HBox>
+            <VBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
+                <Label text="Welcome to the Admin Dashboard" styleClass="section-title"/>
+                <!-- Add more content here -->
+            </VBox>
+        </VBox>
     </center>
 </BorderPane>

@@ -1,32 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<VBox spacing="10" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-fx:controller="cottontex.graphdep.controllers.admin.AdminMonthlyTimeController">
+<BorderPane prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/17.0.2-ea"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="cottontex.graphdep.controllers.admin.AdminMonthlyTimeController"
+            stylesheets="@../../css/admin-styles.css, @../../css/header-styles.css">
     <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
+        <Insets top="20" right="20" bottom="20" left="20" />
     </padding>
-
-    <Label text="Monthly Time View" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
-
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <ComboBox fx:id="yearComboBox" promptText="Select Year"/>
-        <ComboBox fx:id="monthComboBox" promptText="Select Month"/>
-        <Button onAction="#onViewMonthlyWorkHoursClick" text="View Monthly Work Hours"/>
-        <Button fx:id="exportToExcelButton" onAction="#onExportToExcelButtonClick" text="Export to Excel"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button onAction="#onBackToAdminPageClick" text="Back to Admin Page"/>
-    </HBox>
-
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <DatePicker fx:id="holidayDatePicker"/>
-        <Button onAction="#onAddNationalHolidayClick" text="Add National Holiday"/>
-    </HBox>
-
-    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true">
-        <TableView fx:id="scheduleTable"/>
-    </ScrollPane>
-</VBox>
+    <center>
+        <VBox spacing="20" styleClass="main-content">
+            <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header">
+                <ImageView fx:id="logoImage" styleClass="logo-image"/>
+                <Label text="Monthly Time View" styleClass="dashboard-title"/>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button onAction="#onBackToAdminPageClick" text="Back to Admin Page" styleClass="nav-button"/>
+            </HBox>
+            <VBox alignment="CENTER" spacing="20">
+                <HBox spacing="10" alignment="CENTER">
+                    <ComboBox fx:id="yearComboBox" promptText="Select Year"/>
+                    <ComboBox fx:id="monthComboBox" promptText="Select Month"/>
+                    <Button onAction="#onViewMonthlyWorkHoursClick" text="View Monthly Work Hours" styleClass="action-button"/>
+                    <Button fx:id="exportToExcelButton" onAction="#onExportToExcelButtonClick" text="Export to Excel" />
+                </HBox>
+                <HBox spacing="10" alignment="CENTER">
+                    <DatePicker fx:id="holidayDatePicker"/>
+                    <Button onAction="#onAddNationalHolidayClick" text="Add National Holiday" />
+                </HBox>
+                <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true">
+                    <TableView fx:id="scheduleTable"/>
+                </ScrollPane>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>
