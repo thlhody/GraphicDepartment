@@ -2,15 +2,20 @@ package cottontex.graphdep.controllers.common;
 
 import cottontex.graphdep.constants.AppPathsCSS;
 import cottontex.graphdep.constants.AppPathsIMG;
+import cottontex.graphdep.database.interfaces.IUserLogin;
 import cottontex.graphdep.models.UserSession;
+import cottontex.graphdep.models.managers.UserSessionManager;
+import cottontex.graphdep.utils.DependencyFactory;
 import cottontex.graphdep.utils.LoggerUtility;
-import cottontex.graphdep.views.BasePage;
 import cottontex.graphdep.windowmanagement.WindowManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
@@ -19,24 +24,98 @@ import javafx.stage.StageStyle;
 import lombok.Setter;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Objects;
 
 @Setter
 public abstract class BaseController {
 
+    protected final DependencyFactory factory = DependencyFactory.getInstance();
     protected UserSession userSession;
+    protected IUserLogin userLogin;
+
     @FXML
-    private ImageView logoImage;
+    protected ImageView logoImage;
     @FXML
-    private ImageView mainImage;
+    protected ImageView mainImage;
+    @FXML
+    protected Button logoutButton;
+    @FXML
+    protected Button backButton;
+
+    @FXML
+    public void initialize() {
+        LoggerUtility.initialize(this.getClass(), null);
+        setupLogo();
+        initializeDependencies();
+        if (requiresUserSession()) {
+            if (userSession == null) {
+                LoggerUtility.warn("UserSession is null in BaseController initialize method. Attempting to retrieve from UserSessionManager.");
+                userSession = UserSessionManager.getSession();
+            }
+            if (userSession != null) {
+                initializeUserData();
+            } else {
+                LoggerUtility.error("UserSession is still null after attempt to retrieve from UserSessionManager.");
+            }
+        } else {
+            LoggerUtility.info("UserSession not required for this controller.");
+        }
+    }
+
+    protected boolean requiresUserSession() {
+        return true; // Override this in controllers that don't require a session
+    }
+
+    protected void initializeDependencies() {
+        userLogin = factory.get(IUserLogin.class);  // Retrieve IUserLogin from DependencyFactory
+        if (userLogin == null) {
+            LoggerUtility.error("IUserLogin failed to initialize in BaseController");
+        } else {
+            LoggerUtility.info("IUserLogin initialized successfully in BaseController");
+        }
+    }
+
+    public void setUserSession(UserSession session) {
+        LoggerUtility.initialize(this.getClass(), "Setting UserSession: " + session);
+        this.userSession = session;
+        UserSessionManager.setSession(session);
+        if (!initializeUserData()) {
+            LoggerUtility.error("Failed to initialize user data.");
+            Platform.runLater(() -> {
+                showAlert("Access Denied", "You do not have the required permissions to access this page.");
+            });
+        }
+    }
+
+    protected boolean initializeUserData() {
+        if (userSession == null) {
+            LoggerUtility.error("Invalid user session in BaseController.initializeUserData(). UserSession is null.");
+            return false;
+        }
+        LoggerUtility.info("Initializing user data with session: " + userSession);
+        return initializeRoleSpecificData();
+    }
+    protected abstract boolean initializeRoleSpecificData();
+
+
+    protected <T> T getHandler(Class<T> type) {
+        try {
+            LoggerUtility.info("Getting handler for " + type.getSimpleName());
+            return factory.get(type);
+        } catch (IllegalArgumentException e) {
+            LoggerUtility.error("Failed to initialize " + type.getSimpleName(), e);
+            showAlert("Error", "Failed to initialize application. Please restart.");
+            return null;
+        }
+    }
 
     protected void loadPage(Stage stage, String fxmlPath, String title, UserSession userSession) {
         try {
+            LoggerUtility.info("Loading page: " + fxmlPath + " with title: " + title);
             URL location = getClass().getResource(fxmlPath);
             if (location == null) {
-                LoggerUtility.error("******Error-LoadPage****** FXML file not found: " + fxmlPath);
+                LoggerUtility.error("FXML file not found: " + fxmlPath);
                 return;
             }
             FXMLLoader fxmlLoader = new FXMLLoader(location);
@@ -46,73 +125,60 @@ public abstract class BaseController {
             stage.setTitle(title);
             Object controller = fxmlLoader.getController();
             LoggerUtility.info("Controller loaded: " + (controller != null ? controller.getClass().getName() : "null"));
-            if (controller != null) {
-                if (controller instanceof BaseController) {
-                    ((BaseController) controller).setUserSession(userSession);
-                } else {
-                    LoggerUtility.error("******Error-LoadPage****** Controller is not an instance of BaseController: " + controller.getClass().getName());
-                }
+            if (controller instanceof BaseController) {
+                ((BaseController) controller).setUserSession(userSession);
             } else {
-                LoggerUtility.error("******Error-LoadPage****** Controller not found for FXML: " + fxmlPath);
+                LoggerUtility.error("Controller is not an instance of BaseController or is null");
             }
         } catch (IOException e) {
-            LoggerUtility.error("******Error-LoadPage****** Error loading page: " + e.getMessage(), e);
+            LoggerUtility.error("Error loading page: " + e.getMessage(), e);
             showAlert("Error", "Failed to load the requested page.");
         }
     }
 
-    private BaseController getControllerFromStage(Stage stage) {
-        Scene scene = stage.getScene();
-        if (scene != null) {
-            Parent root = scene.getRoot();
-            if (root != null) {
-                return (BaseController) root.getUserData();
-            }
-        }
-        return null;
-    }
-
-    public void setUserSession(UserSession session) {
-        this.userSession = session;
-        LoggerUtility.info("Setting UserSession in " + this.getClass().getSimpleName() + ": " + session);
-    }
-
     protected void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        LoggerUtility.info("Showing alert: " + title + " - " + message);
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
     }
 
     public void setupLogo() {
         try {
-            if (logoImage == null) {
-                LoggerUtility.error("******Error-setupLogo****** LogoImage is null after FXML loading.");
-            } else {
+            LoggerUtility.info("Setting up logo");
+            if (logoImage != null) {
                 URL logoUrl = getClass().getResource(AppPathsIMG.COTTONTEX_LOGO);
                 if (logoUrl != null) {
                     Image logo = new Image(logoUrl.toString());
                     logoImage.setImage(logo);
-                    logoImage.setFitWidth(80);  // Set a specific width
-                    logoImage.setFitHeight(80); // Set a specific height
+                    logoImage.setFitWidth(80);
+                    logoImage.setFitHeight(80);
                     logoImage.setPreserveRatio(true);
+                    LoggerUtility.info("Logo set up successfully");
                 } else {
-                    LoggerUtility.error("******Error-setupLogo******Logo image not found at path: " + AppPathsIMG.COTTONTEX_LOGO);
+                    LoggerUtility.error("Logo image not found at path: " + AppPathsIMG.COTTONTEX_LOGO);
                 }
+            } else {
+                LoggerUtility.error("LogoImage is null after FXML loading.");
             }
         } catch (Exception e) {
-            LoggerUtility.error("******Error-setupLogo****** Error in setting up the logo: " + e.getMessage(), e);
+            LoggerUtility.error("Error in setting up the logo: " + e.getMessage(), e);
         }
     }
 
     public void setupMainImage() {
         try {
+            LoggerUtility.info("Setting up main image");
             Image mainLogo = new Image(Objects.requireNonNull(getClass().getResourceAsStream(AppPathsIMG.CREATIVE_TIME_TASK_TRACKER)));
             mainImage.setImage(mainLogo);
-            mainImage.setFitWidth(400);  // Adjust as needed
-            mainImage.setFitHeight(300); // Adjust as needed
+            mainImage.setFitWidth(400);
+            mainImage.setFitHeight(300);
             mainImage.setPreserveRatio(true);
+            LoggerUtility.info("Main image set up successfully");
         } catch (Exception e) {
             LoggerUtility.error("Error setting up main image: " + e.getMessage(), e);
         }
@@ -120,20 +186,9 @@ public abstract class BaseController {
 
     protected <T> Stage createCustomDialog(String fxmlPath, String title, Class<T> controllerClass) {
         try {
-
-            // Try loading as a resource stream first
-            InputStream fxmlStream = getClass().getResourceAsStream(fxmlPath);
-
-            if (fxmlStream == null) {
-                fxmlStream = getClass().getResourceAsStream(fxmlPath);
-            }
-
-            if (fxmlStream == null) {
-                return null;
-            }
-
-            FXMLLoader loader = new FXMLLoader();
-            Parent root = loader.load(fxmlStream);
+            LoggerUtility.info("Creating custom dialog: " + title + " with FXML: " + fxmlPath);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
 
             Stage dialogStage = new Stage();
             dialogStage.initModality(Modality.APPLICATION_MODAL);
@@ -142,54 +197,79 @@ public abstract class BaseController {
             dialogStage.setResizable(false);
 
             Scene scene = new Scene(root);
-            WindowManager.updateStage(dialogStage,scene);
-            loadCSS(scene);
+            dialogStage.setScene(scene);
+
             loadDialogSpecificCSS(scene, controllerClass);
 
+            WindowManager.initializeDialogStage(dialogStage);
+
             T controller = loader.getController();
-            if (controller instanceof BaseDialogController baseController) {
-                baseController.setDialogStage(dialogStage);
-
-                // Set the dialog image if it exists in the FXML
-                ImageView dialogImageView = (ImageView) root.lookup("#dialogImage");
-                if (dialogImageView != null) {
-                    baseController.setDialogImage(dialogImageView);
+            if (controller != null) {
+                scene.setUserData(controller);
+                if (controller instanceof BaseDialogController) {
+                    ((BaseDialogController) controller).setDialogStage(dialogStage);
                 }
+                LoggerUtility.info("Dialog controller set: " + controller.getClass().getSimpleName());
+            } else {
+                LoggerUtility.error("Failed to get controller for dialog: " + title);
             }
-
-            scene.setUserData(controller);
 
             return dialogStage;
         } catch (IOException e) {
-            LoggerUtility.error("Error creating custom dialog", e);
-            showAlert("Error", "Failed to create custom dialog.");
+            LoggerUtility.error("Error creating custom dialog: " + title, e);
+            showAlert("Error", "Failed to create dialog: " + title);
             return null;
         }
     }
 
-    private void loadCSS(Scene scene) {
-        try {
-            String css = Objects.requireNonNull(getClass().getResource(AppPathsCSS.IMAGE_STYLE_A)).toExternalForm();
-            scene.getStylesheets().add(css);
-        } catch (Exception e) {
-            LoggerUtility.error(e.getMessage());
-        }
-    }
     private void loadDialogSpecificCSS(Scene scene, Class<?> controllerClass) {
         try {
+            LoggerUtility.info("Loading dialog-specific CSS for " + controllerClass.getSimpleName());
             String cssPath = null;
             if (controllerClass.getSimpleName().equals("UserStatusDialogController")) {
                 cssPath = AppPathsCSS.USER_STATUS_DIALOG;
+            } else if (controllerClass.getSimpleName().equals("AboutDialogController")) {
+                cssPath = AppPathsCSS.IMAGE_STYLE_A;
             }
-            // Add more conditions here for other dialog-specific CSS files
 
             if (cssPath != null) {
                 String css = Objects.requireNonNull(getClass().getResource(cssPath)).toExternalForm();
                 scene.getStylesheets().add(css);
+                LoggerUtility.info("CSS loaded: " + cssPath);
+            } else {
+                LoggerUtility.info("No specific CSS found for " + controllerClass.getSimpleName());
             }
         } catch (Exception e) {
             LoggerUtility.error("Error loading dialog-specific CSS: " + e.getMessage());
         }
     }
 
+    protected abstract void performRoleSpecificLogout();
+
+    protected abstract void redirectToLogin();
+
+    protected Scene getCurrentScene() {
+        if (logoutButton != null && logoutButton.getScene() != null) {
+            return logoutButton.getScene();
+        } else if (backButton != null && backButton.getScene() != null) {
+            return backButton.getScene();
+        } else {
+            // Try to find any node that has a scene
+            for (java.lang.reflect.Field field : this.getClass().getDeclaredFields()) {
+                if (javafx.scene.Node.class.isAssignableFrom(field.getType())) {
+                    try {
+                        field.setAccessible(true);
+                        javafx.scene.Node node = (javafx.scene.Node) field.get(this);
+                        if (node != null && node.getScene() != null) {
+                            return node.getScene();
+                        }
+                    } catch (IllegalAccessException e) {
+                        LoggerUtility.error("Error accessing field: " + field.getName(), e);
+                    }
+                }
+            }
+            LoggerUtility.error("Cannot get scene as all known elements are null or don't have a scene");
+            return null;
+        }
+    }
 }

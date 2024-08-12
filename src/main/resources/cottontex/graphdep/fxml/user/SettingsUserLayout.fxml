@@ -8,7 +8,7 @@
 <BorderPane prefHeight="600.0" prefWidth="800.0"
             xmlns="http://javafx.com/javafx/17.0.2-ea"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="cottontex.graphdep.controllers.user.SettingsUserController"
+            fx:controller="cottontex.graphdep.controllers.user.UserSettingsController"
             stylesheets="@../../css/user-styles.css, @../../css/header-styles.css">
     <top>
         <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header">

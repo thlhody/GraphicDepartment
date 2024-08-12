@@ -30,6 +30,7 @@
     -fx-background-radius: 5px;
     -fx-border-radius: 5px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0, 0, 1);
+    -fx-spacing: 10px; /* Add spacing between elements */
 }
 
 .user-status-row:hover {
@@ -44,22 +45,27 @@
     -fx-shape: "M 5 0 A 5 5 0 1 1 5 10 A 5 5 0 1 1 5 0";
 }
 
+
 .status-online {
-    -fx-fill: #28a745;
+    -fx-fill: #28a745; /* Green color for online status */
 }
 
 .status-offline {
-    -fx-fill: #dc3545;
+    -fx-fill: #dc3545; /* Red color for offline status */
 }
 
 .user-name {
     -fx-font-weight: bold;
-    -fx-text-fill: #333333;
+    -fx-text-fill: #333333; /* Dark gray text color */
+}
+
+.user-role {
+    -fx-text-fill: #6c757d; /* Medium gray text color */
 }
 
 .user-time {
     -fx-font-size: 12px;
-    -fx-text-fill: #6c757d;
+    -fx-text-fill: #6c757d; /* Medium gray text color */
 }
 
 .refresh-button {
@@ -80,4 +86,32 @@
 .refresh-button .image-view {
     -fx-fit-height: 20px;
     -fx-fit-width: 20px;
+}
+
+.status-scroll-pane {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+
+.status-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.status-scroll-pane .scroll-bar:vertical {
+    -fx-pref-width: 10;
+    -fx-background-color: transparent;
+}
+
+.status-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: derive(black, 90%);
+    -fx-background-radius: 5em;
+}
+
+.status-scroll-pane .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: derive(black, 70%);
+}
+
+.user-status-container {
+    -fx-background-color: transparent;
+    -fx-padding: 10px 0;
 }

@@ -8,20 +8,20 @@
 <BorderPane prefHeight="600.0" prefWidth="800.0"
             xmlns="http://javafx.com/javafx/17.0.2-ea"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="cottontex.graphdep.controllers.admin.AdminMonthlyTimeController"
+            fx:controller="cottontex.graphdep.controllers.admin.AdminMonthlyController"
             stylesheets="@../../css/admin-styles.css, @../../css/header-styles.css">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20" />
     </padding>
     <center>
-        <VBox spacing="20" styleClass="main-content">
+        <VBox spacing="20" styleClass="main-content" VBox.vgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header">
                 <ImageView fx:id="logoImage" styleClass="logo-image"/>
                 <Label text="Monthly Time View" styleClass="dashboard-title"/>
                 <Region HBox.hgrow="ALWAYS" />
                 <Button onAction="#onBackToAdminPageClick" text="Back to Admin Page" styleClass="nav-button"/>
             </HBox>
-            <VBox alignment="CENTER" spacing="20">
+            <VBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
                 <HBox spacing="10" alignment="CENTER">
                     <ComboBox fx:id="yearComboBox" promptText="Select Year"/>
                     <ComboBox fx:id="monthComboBox" promptText="Select Month"/>
@@ -32,9 +32,11 @@
                     <DatePicker fx:id="holidayDatePicker"/>
                     <Button onAction="#onAddNationalHolidayClick" text="Add National Holiday" />
                 </HBox>
-                <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true">
-                    <TableView fx:id="scheduleTable"/>
-                </ScrollPane>
+                <VBox fx:id="tableContainer" VBox.vgrow="ALWAYS">
+                    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true">
+                        <TableView fx:id="scheduleTable" VBox.vgrow="ALWAYS"/>
+                    </ScrollPane>
+                </VBox>
             </VBox>
         </VBox>
     </center>

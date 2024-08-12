@@ -6,6 +6,29 @@ import org.slf4j.LoggerFactory;
 public class LoggerUtility {
     private static final Logger logger = LoggerFactory.getLogger(LoggerUtility.class);
 
+    public static void initialize(Class<?> clazz, String additionalInfo) {
+        String message = "Initializing " + clazz.getSimpleName();
+        if (additionalInfo != null && !additionalInfo.isEmpty()) {
+            message += ": " + additionalInfo;
+        }
+        logger.info(message);
+    }
+
+    public static void buttonInfo(String buttonName, String username) {
+        String message = "Button clicked: " + buttonName + " by user: " + username;
+        logger.info(message);
+    }
+
+    public static void switchController(Class<?> fromController, Class<?> toController, String username) {
+        String message = "Switching from " + fromController.getSimpleName() + " to " + toController.getSimpleName() + " for user: " + username;
+        logger.info(message);
+    }
+
+    public static void actionInfo(String action, String details, String username) {
+        String message = "Action performed: " + action + " - " + details + " by user: " + username;
+        logger.info(message);
+    }
+
     public static void info(String message) {
         logger.info(message);
         System.out.println(message);

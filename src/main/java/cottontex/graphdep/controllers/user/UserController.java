@@ -1,21 +1,20 @@
 package cottontex.graphdep.controllers.user;
 
 import cottontex.graphdep.constants.AppPathsFXML;
-import cottontex.graphdep.database.queries.user.ScheduleUserTable;
+import cottontex.graphdep.controllers.info.UserStatusDialogController;
 import cottontex.graphdep.models.UserSession;
+import cottontex.graphdep.models.managers.UserSessionManager;
+import cottontex.graphdep.services.user.UserService;
 import cottontex.graphdep.utils.DateTimeUtils;
-import cottontex.graphdep.utils.DependencyFactory;
 import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
-import java.time.LocalDate;
-import java.sql.Timestamp;
-
 public class UserController extends UserBaseController {
+
+    private UserService userService;
 
     @FXML
     private Button startButton;
@@ -28,18 +27,21 @@ public class UserController extends UserBaseController {
     @FXML
     private Button workTableButton;
     @FXML
-    private Button logoutButton;
-    @FXML
     private Label displayTimeInfo;
-
     @FXML
-    private ScheduleUserTable scheduleUserTable;
+    private Button userStatusButton;
 
-    private boolean isWorking = false;
-    private boolean isPaused = false;
+    @Override
+    protected void initializeDependencies() {
+        super.initializeDependencies();
+        this.userService = new UserService(scheduleUserTable);
+        LoggerUtility.initialize(this.getClass(), "Initializing UserController dependencies");
+    }
 
     @FXML
     public void initialize() {
+        LoggerUtility.initialize(this.getClass(), null);
+        super.initialize();
         super.setupLogo();
         initializeDependencies();
         this.userSession = UserSession.getInstance();
@@ -48,6 +50,7 @@ public class UserController extends UserBaseController {
             boolean initialized = super.initializeUserData();
             LoggerUtility.info("User data initialization result in UserController: " + initialized);
             if (initialized) {
+                setWelcomeMessage();
                 updateButtonStates();
                 updateDisplayTimeInfo();
             } else {
@@ -58,134 +61,63 @@ public class UserController extends UserBaseController {
         }
     }
 
-    protected void initializeDependencies() {
-        scheduleUserTable = DependencyFactory.getInstance().createScheduleUserTable();
+    @Override
+    protected void initializeUserDependencies() {
+        super.initializeUserDependencies();
+        this.userService = new UserService(scheduleUserTable);
+        LoggerUtility.initialize(this.getClass(), "Initializing UserController dependencies");
     }
 
     @Override
-    public void setUserSession(UserSession session) {
-        super.setUserSession(session);
-        LoggerUtility.info("UserSession set in UserController: " + session);
+    protected void initializeUserComponents() {
+        super.setWelcomeMessage();
+        updateButtonStates();
+        updateDisplayTimeInfo();
     }
 
-    @Override
-    protected boolean initializeUserData() {
-        userSession = UserSession.getInstance();
-        if (userSession == null) {
-            LoggerUtility.error("UserSession is null in UserController.initializeUserData()");
-            return false;
-        }
-
-        Integer userId = userSession.getUserId();
-        if (userId == null) {
-            LoggerUtility.error("UserID is null in UserController.initializeUserData()");
-            return false;
-        }
-
-        LocalDate today = LocalDate.now();
-        if (scheduleUserTable != null) {
-            isWorking = scheduleUserTable.hasActiveSession(userId, java.sql.Date.valueOf(today));
-            updateButtonStates();
-            updateDisplayTimeInfo();
-            return true;
-        } else {
-            LoggerUtility.error("scheduleUserTable is null in UserController.initializeUserData()");
-            return false;
-        }
-    }
-
-    @Override
-    protected Scene getScene() {
-        if (logoutButton != null) { // Assuming startButton is part of the scene
-            return logoutButton.getScene();
-        } else {
-            LoggerUtility.error("logoutButton is null, cannot obtain Scene.");
-            return null;
-        }
-    }
 
     @FXML
     protected void onStartButtonClick() {
-        if (!isWorking && UserSession.getInstance() != null) {
-            Integer userId = UserSession.getInstance().getUserId();
-            Timestamp startTimestamp = new Timestamp(System.currentTimeMillis());
-            if (userId != null && scheduleUserTable.saveStartHour(userId, startTimestamp)) {
-                isWorking = true;
-                updateButtonStates();
-                updateDisplayTimeInfo();
-            } else {
-                LoggerUtility.error("Failed to start work session");
-            }
-        } else {
-            LoggerUtility.error("UserSession is null or already working in UserController.onStartButtonClick()");
-        }
+        LoggerUtility.buttonInfo("Start Work", UserSession.getInstance().getUsername());
+        workSessionState = userService.startWork(UserSession.getInstance(), workSessionState);
+        updateButtonStates();
+        updateDisplayTimeInfo();
     }
+
     @FXML
     protected void onPauseButtonClick() {
-        if (isWorking && UserSession.getInstance() != null) {
-            Integer userId = UserSession.getInstance().getUserId();
-            Timestamp pauseTimestamp = new Timestamp(System.currentTimeMillis());
-            scheduleUserTable.savePauseTime(userId, pauseTimestamp);
-            isPaused = !isPaused;
-            updateButtonStates();
-            updateDisplayTimeInfo();
-        } else {
-            LoggerUtility.error("UserSession is null or not working in UserController.onPauseButtonClick()");
-        }
+        LoggerUtility.buttonInfo("Pause/Resume Work", UserSession.getInstance().getUsername());
+        workSessionState = userService.togglePause(UserSession.getInstance(), workSessionState);
+        updateButtonStates();
+        updateDisplayTimeInfo();
     }
+
     @FXML
     protected void onEndButtonClick() {
-        if (isWorking && UserSession.getInstance() != null) {
-            Integer userId = UserSession.getInstance().getUserId();
-            Timestamp endTimestamp = new Timestamp(System.currentTimeMillis());
-            scheduleUserTable.finalizeWorkDay(userId, endTimestamp);
-            isWorking = false;
-            isPaused = false;
-            updateButtonStates();
-            updateDisplayTimeInfo();
-        } else {
-            LoggerUtility.error("UserSession is null or not working in UserController.onEndButtonClick()");
+        LoggerUtility.buttonInfo("End Work", UserSession.getInstance().getUsername());
+        workSessionState = userService.endWork(UserSession.getInstance(), workSessionState);
+        updateButtonStates();
+        updateDisplayTimeInfo();
+    }
+
+    @FXML
+    protected void onUserStatusButtonClick() {
+        LoggerUtility.buttonInfo("User Status", UserSession.getInstance().getUsername());
+        Stage dialogStage = createCustomDialog(AppPathsFXML.USER_STATUS_DIALOG, "Users", UserStatusDialogController.class);
+        if (dialogStage != null) {
+            dialogStage.showAndWait();
         }
     }
 
     @FXML
     protected void onMyAccountButtonClick() {
+        LoggerUtility.buttonInfo("My Account", UserSession.getInstance().getUsername());
         if (UserSession.getInstance() != null) {
             Stage stage = (Stage) myAccountButton.getScene().getWindow();
+            LoggerUtility.switchController(this.getClass(), UserSettingsController.class, UserSession.getInstance().getUsername());
             loadPage(stage, AppPathsFXML.MY_ACCOUNT, "My Account", UserSession.getInstance());
         } else {
             LoggerUtility.error("UserSession is null in UserController.onMyAccountButtonClick()");
-        }
-    }
-
-    @FXML
-    protected void onLogoutButtonClick() {
-        UserSession.setInstance(userSession);
-        Stage stage = (Stage) logoutButton.getScene().getWindow();
-        loadPage(stage, AppPathsFXML.LAUNCHER, "Login", new UserSession());
-    }
-
-    private void updateButtonStates() {
-        startButton.setDisable(isWorking);
-        pauseButton.setDisable(!isWorking);
-        endButton.setDisable(!isWorking);
-
-        if (isPaused) {
-            pauseButton.setText("Resume");
-        } else {
-            pauseButton.setText("Pause");
-        }
-    }
-
-    private void updateDisplayTimeInfo() {
-        if (isWorking) {
-            if (isPaused) {
-                displayTimeInfo.setText("Work paused at "+ DateTimeUtils.getCurrentDateTimeForDisplay());
-            } else {
-                displayTimeInfo.setText("Currently working at "+ DateTimeUtils.getCurrentDateTimeForDisplay());
-            }
-        } else {
-            displayTimeInfo.setText("Not working at "+ DateTimeUtils.getCurrentDateTimeForDisplay());
         }
     }
 
@@ -198,4 +130,29 @@ public class UserController extends UserBaseController {
             LoggerUtility.error("UserSession is null in UserController.onViewWorkTableButtonClick()");
         }
     }
+
+    private void updateButtonStates() {
+        startButton.setDisable(workSessionState.isWorking());
+        pauseButton.setDisable(!workSessionState.isWorking());
+        endButton.setDisable(!workSessionState.isWorking());
+
+        pauseButton.setText(workSessionState.isPaused() ? "Resume" : "Pause");
+        LoggerUtility.info("Button states updated. isWorking: " + workSessionState.isWorking() + ", isPaused: " + workSessionState.isPaused());
+    }
+
+    private void updateDisplayTimeInfo() {
+        String displayInfo = userService.getDisplayTimeInfo(workSessionState);
+        displayTimeInfo.setText(displayInfo);
+        LoggerUtility.info("Display time info updated: " + displayInfo);
+    }
+
+
+    @FXML
+    protected void onLogoutButtonClick() {
+        LoggerUtility.buttonInfo("Logout", userSession.getUsername());
+        performRoleSpecificLogout();
+        UserSessionManager.clearSession();
+        redirectToLogin();
+    }
+
 }

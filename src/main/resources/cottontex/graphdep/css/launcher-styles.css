@@ -25,19 +25,54 @@
     -fx-pref-width: 200px;
 }
 
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #007bff;
+    -fx-border-width: 2px;
+}
+
 /* Button styles */
-.login-button {
-    -fx-background-color: #007bff;
-    -fx-text-fill: white;
+.button {
     -fx-font-weight: bold;
     -fx-padding: 8px 16px;
     -fx-background-radius: 4px;
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
 }
 
-.login-button:hover {
+.button:hover, .button:focused {
     -fx-background-color: #0056b3;
 }
 
+.button:pressed {
+    -fx-background-color: #004085;
+}
+
+.button:focused {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,123,255,0.5), 10, 0, 0, 0);
+}
+
+/* Login button specific styles */
+.login-button {
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 4px;
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+}
+
+.login-button:hover, .login-button:focused {
+    -fx-background-color: #0056b3;
+}
+
+.login-button:pressed {
+    -fx-background-color: #004085;
+}
+
+.login-button:focused {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,123,255,0.5), 10, 0, 0, 0);
+}
+
+/* Navigation button styles */
 .nav-button {
     -fx-background-color: transparent;
     -fx-text-fill: #007bff;
@@ -46,6 +81,14 @@
     -fx-cursor: hand;
 }
 
-.nav-button:hover {
+.nav-button:hover, .nav-button:focused {
     -fx-background-color: #f8f9fa;
+}
+
+.nav-button:pressed {
+    -fx-background-color: #e2e6ea;
+}
+
+.nav-button:focused {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,123,255,0.5), 10, 0, 0, 0);
 }

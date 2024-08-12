@@ -17,5 +17,5 @@
     <Label fx:id="titleLabel" style="-fx-font-weight: bold;"/>
     <Label fx:id="versionLabel"/>
     <Label fx:id="copyrightLabel"/>
-    <Button text="OK" onAction="#closeDDialog"/>
+    <Button text="OK" onAction="#closeAboutDialog"/>
 </VBox>

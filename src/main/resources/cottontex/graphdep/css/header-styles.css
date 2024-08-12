@@ -30,6 +30,10 @@
     -fx-background-color: #f8f9fa;
 }
 
+.nav-button:pressed {
+    -fx-background-color: #e2e6ea;
+}
+
 .welcome-label {
     -fx-font-size: 16px;
     -fx-text-fill: #007bff;

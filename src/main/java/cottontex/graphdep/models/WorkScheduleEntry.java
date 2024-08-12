@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WorkScheduleEntry {
+
     private final StringProperty name;
     private final Map<Integer, StringProperty> days;
     private final StringProperty total;

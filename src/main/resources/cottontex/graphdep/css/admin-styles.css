@@ -10,6 +10,16 @@
     -fx-font-weight: bold;
     -fx-padding: 8px 16px;
     -fx-background-radius: 4px;
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+}
+
+.button:hover {
+    -fx-background-color: #0056b3;
+}
+
+.button:pressed {
+    -fx-background-color: #004085;
 }
 
 .primary-button {

@@ -1,53 +1,35 @@
 package cottontex.graphdep.utils;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Map;
 
 public final class DateTimeUtils {
 
-    private static final DateTimeFormatter INPUT_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static final DateTimeFormatter OUTPUT_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
 
     private DateTimeUtils() {
         // Private constructor to prevent instantiation
     }
 
-    public static String formatTimeForDisplay(String timestampString) {
-        if (timestampString == null || timestampString.isEmpty()) {
-            return "N/A";
-        }
-        try {
-            LocalDateTime dateTime = LocalDateTime.parse(timestampString, INPUT_FORMATTER);
-            return dateTime.format(OUTPUT_FORMATTER);
-        } catch (DateTimeParseException e) {
-            LoggerUtility.error("Failed to parse time: " + timestampString);
-            return "N/A";
-        }
-    }
-
-    public static int calculateMinutes(String time) {
-        if (time == null || time.equals("N/A") || time.isEmpty()) {
+    public static Integer calculateMinutes(String timeString) {
+        if (timeString == null || timeString.isEmpty() || timeString.equals("00:00")) {
             return 0;
         }
-        try {
-            String[] parts = time.split(":");
-            return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            LoggerUtility.error("Failed to calculate minutes from time: " + time);
-            return 0;
+        if (timeString.equals("CM") || timeString.equals("SN") || timeString.equals("CO")) {
+            return 0;  // Or you might want to return a special value for these cases
         }
+        String[] parts = timeString.split(":");
+        if (parts.length != 2) {
+            LoggerUtility.error("Invalid time format: " + timeString);
+        }
+        Integer hours = Integer.parseInt(parts[0]);
+        Integer minutes = Integer.parseInt(parts[1]);
+        return hours * 60 + minutes;
     }
 
-    public static String formatTotalTime(int totalMinutes) {
-        int hours = totalMinutes / 60;
-        int minutes = totalMinutes % 60;
+    public static String formatTotalTime(Integer totalMinutes) {
+        Integer hours = totalMinutes / 60;
+        Integer minutes = totalMinutes % 60;
         return String.format("%d:%02d", hours, minutes);
     }
 
@@ -56,19 +38,16 @@ public final class DateTimeUtils {
         return now.format(DISPLAY_FORMATTER);
     }
 
-    public static Date getSelectedDate(boolean useSystemTime, LocalDate pickerDate) {
-        if (useSystemTime) {
-            return new Date(System.currentTimeMillis());
-        } else {
-            return java.sql.Date.valueOf(pickerDate);
+    public static int roundDownHours(String timeString) {
+        if (timeString == null || timeString.isEmpty() || timeString.equals("00:00")) {
+            return 0;
         }
-    }
 
-    public static Timestamp getSelectedTimestamp(boolean useSystemTime, LocalDate pickerDate, LocalTime pickerTime) {
-        if (useSystemTime) {
-            return new Timestamp(System.currentTimeMillis());
-        } else {
-            return Timestamp.valueOf(pickerDate.atTime(pickerTime));
+        String[] parts = timeString.split(":");
+        if (parts.length != 2) {
+            LoggerUtility.error("Invalid time format: " + timeString);
         }
+        // Simple round down to nearest hour
+        return Integer.parseInt(parts[0]);
     }
 }

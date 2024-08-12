@@ -22,8 +22,8 @@ public abstract class BasePage extends Application {
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
-            WindowManager.initializeStage(primaryStage);
-            WindowManager.updateStage(primaryStage, scene);
+            WindowManager.initializeMainStage(primaryStage);
+            WindowManager.updateMainStage(primaryStage, scene);
 
             primaryStage.setTitle(getTitle());
             primaryStage.show();
@@ -32,17 +32,4 @@ public abstract class BasePage extends Application {
         }
     }
 
-    public void loadNewScene(Stage stage, String fxmlPath, String title) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-
-            WindowManager.updateStage(stage, scene);
-
-            stage.setTitle(title);
-        } catch (IOException e) {
-            LoggerUtility.error(e.getMessage());
-        }
-    }
 }

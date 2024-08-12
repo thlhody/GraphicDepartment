@@ -33,11 +33,17 @@ module cottontex.graphdep {
     opens cottontex.graphdep.database to javafx.fxml;
     exports cottontex.graphdep.database;
 
-    opens cottontex.graphdep.database.queries.admin to javafx.fxml;
-    exports cottontex.graphdep.database.queries.admin;
+    exports cottontex.graphdep.database.handlers;
+    opens cottontex.graphdep.database.handlers to javafx.base, javafx.fxml;
 
-    opens cottontex.graphdep.database.queries.user to javafx.fxml;
-    exports cottontex.graphdep.database.queries.user;
+    opens cottontex.graphdep.database.handlers.admin to javafx.fxml;
+    exports cottontex.graphdep.database.handlers.admin;
+
+    exports cottontex.graphdep.database.interfaces;
+    opens cottontex.graphdep.database.interfaces to javafx.base, javafx.fxml;
+
+    opens cottontex.graphdep.database.handlers.user to javafx.fxml;
+    exports cottontex.graphdep.database.handlers.user;
 
     opens cottontex.graphdep.models to javafx.base, javafx.fxml;
     exports cottontex.graphdep.models;
@@ -47,9 +53,16 @@ module cottontex.graphdep {
 
     exports cottontex.graphdep.views;
     opens cottontex.graphdep.views to javafx.fxml;
-
-    exports cottontex.graphdep.database.queries;
-    opens cottontex.graphdep.database.queries to javafx.fxml;
+    exports cottontex.graphdep.database.interfaces.admin;
+    opens cottontex.graphdep.database.interfaces.admin to javafx.base, javafx.fxml;
+    exports cottontex.graphdep.database.interfaces.user;
+    opens cottontex.graphdep.database.interfaces.user to javafx.base, javafx.fxml;
+    exports cottontex.graphdep.services.admin;
+    opens cottontex.graphdep.services.admin to javafx.fxml;
+    exports cottontex.graphdep.services.user;
+    opens cottontex.graphdep.services.user to javafx.fxml;
+    exports cottontex.graphdep.services.info;
+    opens cottontex.graphdep.services.info to javafx.fxml;
 
 
 }

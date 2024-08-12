@@ -1,0 +1,73 @@
+/* User Table Styles */
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-table-cell-border-color: #e0e0e0;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #4a90e2;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-size: 45;
+    -fx-border-width: 0 1 1 0;
+    -fx-border-color: #3a7fcf;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 0 10 0;
+}
+
+.table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #e0e0e0;
+    -fx-padding: 5 0 5 0;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f7f9fc;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #d4e6f7;
+}
+
+.table-row-cell:selected .text {
+    -fx-fill: #2c3e50;
+}
+
+.table-view .table-cell {
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 5 10 5 10;
+}
+
+/* Styles for specific columns if needed */
+.table-column.date-column {
+    -fx-alignment: CENTER;
+}
+
+.table-column.time-column {
+    -fx-alignment: CENTER;
+}
+
+/* Hover effect */
+.table-row-cell:hover {
+    -fx-background-color: #eaf2fa;
+}
+
+/* Scrollbar styles */
+.table-view .scroll-bar:vertical {
+    -fx-background-color: #f0f0f0;
+}
+
+.table-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #a0a0a0;
+}
+
+.table-view .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #808080;
+}

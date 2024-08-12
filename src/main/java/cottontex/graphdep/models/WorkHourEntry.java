@@ -1,5 +1,7 @@
 package cottontex.graphdep.models;
 
+import lombok.Getter;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -12,12 +14,12 @@ public class WorkHourEntry {
     private LocalTime breaksTime;
     private LocalDateTime endTime;
     private LocalTime totalWorkedTime;
+    @Getter
     private String timeOffType;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    // Constructor
     public WorkHourEntry(LocalDate date, LocalDateTime startTime, Integer breaks, LocalTime breaksTime, LocalDateTime endTime, LocalTime totalWorkedTime, String timeOffType) {
         this.date = date;
         this.startTime = startTime;
