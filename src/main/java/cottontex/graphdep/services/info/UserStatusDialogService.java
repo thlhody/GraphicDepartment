@@ -2,11 +2,14 @@ package cottontex.graphdep.services.info;
 
 import cottontex.graphdep.database.interfaces.admin.IAdminTimeTableHandler;
 import cottontex.graphdep.models.UserStatus;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,14 +26,15 @@ public class UserStatusDialogService {
         this.adminTimeTableHandler = adminTimeTableHandler;
     }
 
-    public List<UserStatus> fetchUserStatuses() {
-        return adminTimeTableHandler.getUserStatuses();
-    }
-
     public static boolean isCurrentlyOnline(UserStatus status) {
         return status.getStartTime() != null &&
                 !status.getStartTime().equals("N/A") &&
                 (status.getEndTime() == null || status.getEndTime().equals("N/A"));
+    }
+
+    public Single<List<UserStatus>> fetchUserStatuses() {
+        return Single.fromCallable(adminTimeTableHandler::getUserStatuses)
+                .subscribeOn(Schedulers.io());
     }
 
     public static String formatUserStatus(UserStatus status) {

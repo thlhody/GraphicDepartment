@@ -10,6 +10,7 @@ module cottontex.graphdep {
     requires org.apache.poi.ooxml;
     requires com.zaxxer.hikari;
     requires mysql.connector.j;
+    requires io.reactivex.rxjava3;
 
 
     opens cottontex.graphdep to javafx.fxml;

@@ -33,6 +33,7 @@ public class ScheduleUserTable extends BaseDatabase implements IScheduleUserTabl
         }
     }
 
+    @Override
     public void finalizeWorkDay(Integer userId, Timestamp endTimestamp) {
         Connection conn = null;
         PreparedStatement pstmtUpdate = null;
@@ -42,6 +43,7 @@ public class ScheduleUserTable extends BaseDatabase implements IScheduleUserTabl
             conn = getConnection();
             conn.setAutoCommit(false);
 
+            // Update the time_processing table
             pstmtUpdate = getPreparedStatement(conn, SQLQueries.FINALIZE_WORK_DAY_TIME_PROCESSING);
             pstmtUpdate.setTimestamp(1, endTimestamp);
             pstmtUpdate.setTimestamp(2, endTimestamp);
@@ -49,6 +51,7 @@ public class ScheduleUserTable extends BaseDatabase implements IScheduleUserTabl
             int updatedRows = pstmtUpdate.executeUpdate();
             LoggerUtility.info("Updated " + updatedRows + " rows in time_processing table");
 
+            // Call the stored procedure to calculate work interval
             callStmt = getCallableStatement(conn, SQLQueries.FINALIZE_WORK_DAY_CALL_PROCEDURE);
             callStmt.setInt(1, userId);
             callStmt.setDate(2, new java.sql.Date(endTimestamp.getTime()));
@@ -79,20 +82,6 @@ public class ScheduleUserTable extends BaseDatabase implements IScheduleUserTabl
         }
     }
 
-    public boolean hasActiveSession(Integer userId, Date date) {
-        try (Connection conn = getConnection(); PreparedStatement pstmt = getPreparedStatement(conn, SQLQueries.HAS_ACTIVE_SESSION)) {
-            pstmt.setInt(1, userId);
-            pstmt.setDate(2, date); // This should now be correct as we're passing java.sql.Date
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            LoggerUtility.error("Error checking for active session", e);
-        }
-        return false;
-    }
-
     @Override
     public WorkSessionState getWorkSessionState(Integer userId) {
         try (Connection conn = getConnection();
@@ -101,16 +90,32 @@ public class ScheduleUserTable extends BaseDatabase implements IScheduleUserTabl
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 WorkSessionState state = new WorkSessionState();
-                state.setWorking(rs.getBoolean("is_working"));
-                state.setPaused(rs.getBoolean("is_paused"));
-                state.setStartTimestamp(rs.getTimestamp("start_timestamp"));
-                state.setPauseTimestamp(rs.getTimestamp("pause_timestamp"));
+                String sessionStateStr = rs.getString("session_state");
+                Timestamp startTimestamp = rs.getTimestamp("time_a");
+
+                if (sessionStateStr != null) {
+                    WorkSessionState.SessionState sessionState = WorkSessionState.SessionState.valueOf(sessionStateStr);
+                    state.setSessionState(sessionState);
+                } else {
+                    state.setSessionState(WorkSessionState.SessionState.ENDED);
+                }
+
+                state.setStartTimestamp(startTimestamp);
+
+                LoggerUtility.info("Retrieved work session state for user " + userId +
+                        ": sessionState=" + state.getSessionState() +
+                        ", isWorking=" + state.isWorking() +
+                        ", isPaused=" + state.isPaused());
                 return state;
             }
         } catch (SQLException e) {
-            LoggerUtility.error("Error getting work session state", e);
+            LoggerUtility.error("Error getting work session state for user " + userId, e);
         }
-        return new WorkSessionState(); // Return default state if no record found
+        // Return a new state with default values if no record found
+        WorkSessionState defaultState = new WorkSessionState();
+        defaultState.setSessionState(WorkSessionState.SessionState.ENDED);
+        LoggerUtility.info("No existing work session state found for user " + userId + ". Created default state.");
+        return defaultState;
     }
 
     @Override
@@ -122,9 +127,13 @@ public class ScheduleUserTable extends BaseDatabase implements IScheduleUserTabl
             pstmt.setBoolean(3, state.isPaused());
             pstmt.setTimestamp(4, state.getStartTimestamp());
             pstmt.setTimestamp(5, state.getPauseTimestamp());
+            pstmt.setString(6, state.getSessionState().name());
             pstmt.executeUpdate();
+            LoggerUtility.info("Saved work session state for user " + userId +
+                    ": isWorking=" + state.isWorking() + ", isPaused=" + state.isPaused() +
+                    ", sessionState=" + state.getSessionState());
         } catch (SQLException e) {
-            LoggerUtility.error("Error saving work session state", e);
+            LoggerUtility.error("Error saving work session state for user " + userId, e);
         }
     }
 
@@ -140,26 +149,38 @@ public class ScheduleUserTable extends BaseDatabase implements IScheduleUserTabl
     }
 
     @Override
-    public void insertTimeProcessing(Integer userId, Timestamp startTime) {
+    public void insertTimeProcessing(Integer userId, Timestamp startTime, WorkSessionState.SessionState sessionState) {
         try (Connection conn = getConnection();
              PreparedStatement pstmt = getPreparedStatement(conn, SQLQueries.INSERT_TIME_PROCESSING)) {
             pstmt.setInt(1, userId);
             pstmt.setTimestamp(2, startTime);
-            pstmt.executeUpdate();
+            pstmt.setString(3, sessionState.name());
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                LoggerUtility.info("Inserted new time processing record for user " + userId);
+            } else {
+                LoggerUtility.warn("Failed to insert time processing record for user " + userId);
+            }
         } catch (SQLException e) {
-            LoggerUtility.error("Error inserting time processing", e);
+            LoggerUtility.error("Error inserting time processing record", e);
         }
     }
 
     @Override
-    public void updateTimeProcessing(Integer userId, Timestamp endTime) {
+    public void updateTimeProcessing(Integer userId, Timestamp endTime, WorkSessionState.SessionState sessionState) {
         try (Connection conn = getConnection();
              PreparedStatement pstmt = getPreparedStatement(conn, SQLQueries.UPDATE_TIME_PROCESSING)) {
             pstmt.setTimestamp(1, endTime);
-            pstmt.setInt(2, userId);
-            pstmt.executeUpdate();
+            pstmt.setString(2, sessionState.name());
+            pstmt.setInt(3, userId);
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                LoggerUtility.info("Updated time processing record for user " + userId);
+            } else {
+                LoggerUtility.warn("No active time processing record found to update for user " + userId);
+            }
         } catch (SQLException e) {
-            LoggerUtility.error("Error updating time processing", e);
+            LoggerUtility.error("Error updating time processing record", e);
         }
     }
 }

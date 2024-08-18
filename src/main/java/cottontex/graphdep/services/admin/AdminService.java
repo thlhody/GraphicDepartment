@@ -1,13 +1,16 @@
 package cottontex.graphdep.services.admin;
 
-import cottontex.graphdep.database.interfaces.admin.IAdminHandler;
+import cottontex.graphdep.database.interfaces.admin.IAdminTimeTableHandler;
+import cottontex.graphdep.database.interfaces.admin.IUserManagementHandler;
 
 public class AdminService {
-    private final IAdminHandler adminHandler;
+    private final IAdminTimeTableHandler adminTimeTableHandler;
+    private final IUserManagementHandler userManagementHandler;
 
-    public AdminService(IAdminHandler adminHandler) {
-        this.adminHandler = adminHandler;
+    public AdminService(IAdminTimeTableHandler adminTimeTableHandler, IUserManagementHandler userManagementHandler) {
+        this.adminTimeTableHandler = adminTimeTableHandler;
+        this.userManagementHandler = userManagementHandler;
     }
 
-    // Add methods for admin-specific operations here
+    // Implement methods using adminTimeTableHandler and userManagementHandler
 }

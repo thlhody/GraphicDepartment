@@ -25,39 +25,43 @@ public class SQLQueries {
             "UPDATE time_processing SET time_b = ?, duration = TIMESTAMPDIFF(SECOND, time_a, ?) / 3600.0 " +
                     "WHERE user_id = ? AND time_b IS NULL";
 
-
     public static final String GET_WORK_SESSION_STATE =
-            "SELECT is_working, is_paused, start_timestamp, pause_timestamp " +
-                    "FROM work_session_state WHERE user_id = ?";
+            "SELECT time_a, session_state " +
+                    "FROM time_processing " +
+                    "WHERE user_id = ? " +
+                    "ORDER BY time_a DESC LIMIT 1";
+
 
     public static final String SAVE_WORK_SESSION_STATE =
-            "INSERT INTO work_session_state (user_id, is_working, is_paused, start_timestamp, pause_timestamp) " +
-                    "VALUES (?, ?, ?, ?, ?) " +
+            "INSERT INTO work_session_state (user_id, is_working, is_paused, start_timestamp, pause_timestamp, session_state) " +
+                    "VALUES (?, ?, ?, ?, ?, ?) " +
                     "ON DUPLICATE KEY UPDATE " +
                     "is_working = VALUES(is_working), " +
                     "is_paused = VALUES(is_paused), " +
                     "start_timestamp = VALUES(start_timestamp), " +
                     "pause_timestamp = VALUES(pause_timestamp), " +
+                    "session_state = VALUES(session_state), " +
                     "created_at = CURRENT_TIMESTAMP";
 
     public static final String CLEAR_WORK_SESSION_STATE =
             "DELETE FROM work_session_state WHERE user_id = ?";
 
+    // Modified query to include session_state
     public static final String INSERT_TIME_PROCESSING =
-            "INSERT INTO time_processing (user_id, time_a) VALUES (?, ?)";
+            "INSERT INTO time_processing (user_id, time_a, session_state) VALUES (?, ?, ?)";
 
+    // Modified query to include session_state
     public static final String UPDATE_TIME_PROCESSING =
-            "UPDATE time_processing SET time_b = ? WHERE user_id = ? AND time_b IS NULL";
+            "UPDATE time_processing SET time_b = ?, session_state = ? WHERE user_id = ? AND time_b IS NULL";
 
+    // Modified query to include session_state
     public static final String FINALIZE_WORK_DAY_TIME_PROCESSING =
-            "UPDATE time_processing SET time_b = ?, duration = TIMESTAMPDIFF(SECOND, time_a, ?) / 3600.0 " +
+            "UPDATE time_processing SET time_b = ?, duration = TIMESTAMPDIFF(SECOND, time_a, ?) / 3600.0, session_state = 'ENDED' " +
                     "WHERE user_id = ? AND time_b IS NULL";
+
 
     public static final String FINALIZE_WORK_DAY_CALL_PROCEDURE =
             "{CALL calculate_work_interval(?, ?)}";
-
-    public static final String HAS_ACTIVE_SESSION =
-            "SELECT 1 FROM time_processing WHERE user_id = ? AND DATE(time_a) = ? AND time_b IS NULL LIMIT 1";
 
     public static final String TIME_OFF_UPDATE =
             "INSERT INTO work_interval (user_id, first_start_time, end_time, total_worked_time, time_off_type) VALUES (?, ?, ?, ?, ?)";
@@ -109,7 +113,6 @@ public class SQLQueries {
                     "WHERE (wi.total_worked_seconds > 0 OR wi.time_off_type IS NOT NULL) AND u.employee_id != '00000'\n" +
                     "GROUP BY u.name, u.employee_id, wi.work_date, wi.time_off_type\n" +
                     "ORDER BY u.name, day_number";
-
 
     // admin add national holiday
     public static final String GET_NON_ADMIN_USERS =

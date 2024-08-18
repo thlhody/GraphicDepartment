@@ -5,24 +5,25 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.ImageView?>
 
-<StackPane xmlns="http://javafx.com/javafx/17.0.2-ea"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="cottontex.graphdep.controllers.info.UserStatusDialogController">
-    <VBox spacing="10">
-        <padding>
-            <Insets top="20" right="20" bottom="20" left="20" />
-        </padding>
-        <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label text="Users" styleClass="dialog-header"/>
-            <Region HBox.hgrow="ALWAYS" />
-            <Button fx:id="refreshButton" styleClass="refresh-button">
-                <graphic>
-                    <ImageView fx:id="refreshIcon" fitHeight="20" fitWidth="20" />
-                </graphic>
-            </Button>
-        </HBox>
-        <ScrollPane fx:id="statusScrollPane" fitToWidth="true" styleClass="status-scroll-pane" VBox.vgrow="ALWAYS">
-            <VBox fx:id="userStatusBox" spacing="10" styleClass="user-status-container" />
-        </ScrollPane>
-    </VBox>
-</StackPane>
+<VBox xmlns="http://javafx.com/javafx/17.0.2-ea"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="cottontex.graphdep.controllers.info.EUserStatusDialogController"
+      stylesheets="@../../css/user-status-dialog.css"
+      spacing="10"
+      prefWidth="600" prefHeight="400">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20" />
+    </padding>
+    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="header">
+        <Label text="Users" styleClass="dialog-header"/>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="refreshButton" styleClass="refresh-button">
+            <graphic>
+                <ImageView fx:id="refreshIcon" fitHeight="20" fitWidth="20" />
+            </graphic>
+        </Button>
+    </HBox>
+    <ScrollPane fx:id="statusScrollPane" VBox.vgrow="ALWAYS" styleClass="status-scroll-pane">
+        <VBox fx:id="userStatusBox" styleClass="user-status-container" />
+    </ScrollPane>
+</VBox>

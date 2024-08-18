@@ -1,13 +1,13 @@
 package cottontex.graphdep;
 
 import cottontex.graphdep.constants.AppPathsFXML;
-import cottontex.graphdep.views.BasePage;
+import cottontex.graphdep.views.EBasePage;
 import cottontex.graphdep.database.DatabaseConnection;
 import cottontex.graphdep.database.BaseDatabase;
 import cottontex.graphdep.utils.LoggerUtility;
 import javafx.application.Platform;
 
-public class Launcher extends BasePage {
+public class ELauncher extends EBasePage {
 
     @Override
     protected String getFxmlPath() {

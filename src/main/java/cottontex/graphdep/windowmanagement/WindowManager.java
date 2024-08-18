@@ -1,5 +1,6 @@
 package cottontex.graphdep.windowmanagement;
 
+import cottontex.graphdep.controllers.common.EBaseController;
 import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -87,6 +88,13 @@ public class WindowManager {
             FXMLLoader loader = new FXMLLoader(WindowManager.class.getResource(fxmlPath));
             Parent root = loader.load();
             Scene scene = new Scene(root);
+
+            EBaseController controller = loader.getController();
+            if (controller != null) {
+                scene.setUserData(controller);
+            } else {
+                LoggerUtility.error("Controller is null after loading FXML: " + fxmlPath);
+            }
 
             updateMainStage(stage, scene);
 

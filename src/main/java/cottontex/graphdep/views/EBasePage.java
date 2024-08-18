@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public abstract class BasePage extends Application {
+public abstract class EBasePage extends Application {
 
     protected abstract String getFxmlPath();
     protected abstract String getTitle();
@@ -31,5 +31,4 @@ public abstract class BasePage extends Application {
             LoggerUtility.error(e.getMessage());
         }
     }
-
 }

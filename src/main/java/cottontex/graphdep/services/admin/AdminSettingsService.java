@@ -4,6 +4,7 @@ import cottontex.graphdep.database.interfaces.admin.IUserManagementHandler;
 import cottontex.graphdep.database.handlers.AddUserResult;
 import cottontex.graphdep.utils.LoggerUtility;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdminSettingsService {
@@ -29,6 +30,11 @@ public class AdminSettingsService {
     }
 
     public List<String> getAllUsernames() {
-        return userManagementHandler.getAllUsernames();
+        try {
+            return userManagementHandler.getAllUsernames();
+        } catch (Exception e) {
+            LoggerUtility.error("Error fetching usernames: " + e.getMessage(), e);
+            return new ArrayList<>(); // Return an empty list instead of null
+        }
     }
 }

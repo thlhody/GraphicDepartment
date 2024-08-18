@@ -8,52 +8,47 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.io.InputStream;
+import java.util.Optional;
 
-@Getter
-@Setter
-public abstract class BaseDialogController extends BaseController {
+public abstract class EBaseDialogController extends EBaseController {
 
     protected Stage dialogStage;
     protected BaseDialogService baseDialogService;
-
 
     @FXML
     protected Button refreshButton;
     @FXML
     protected ImageView refreshIcon;
+    @FXML
+    protected ImageView dialogImage;
 
     @Override
-    public void initialize() {
-        super.initialize();
-        LoggerUtility.initialize(this.getClass(), "Initializing BaseDialogController");
-        baseDialogService = new BaseDialogService();
-        initializeCommonElements();
+    protected void initializeDependencies() {
+        this.baseDialogService = new BaseDialogService();
     }
 
-    protected void initializeCommonElements() {
+    @Override
+    protected void initializeComponents() {
         setupRefreshButton();
         loadDialogImage();
     }
 
-    @Override
-    protected abstract void initializeDependencies();
-
     public void setDialogStage(Stage dialogStage) {
-        LoggerUtility.info("Setting dialog stage for " + this.getClass().getSimpleName());
         this.dialogStage = dialogStage;
+        LoggerUtility.info("Dialog stage set for " + this.getClass().getSimpleName());
     }
 
+    @FXML
     protected void closeDialog() {
-        if (dialogStage != null) {
-            LoggerUtility.info("Closing dialog: " + dialogStage.getTitle());
-            dialogStage.close();
-        } else {
-            LoggerUtility.warn("Attempted to close dialog, but dialogStage is null");
-        }
+        Optional.ofNullable(dialogStage).ifPresentOrElse(
+                stage -> {
+                    stage.close();
+                    LoggerUtility.info("Closing dialog: " + stage.getTitle());
+                },
+                () -> LoggerUtility.warn("Attempted to close dialog, but dialogStage is null")
+        );
+        dispose();
     }
 
     @Override
@@ -65,19 +60,21 @@ public abstract class BaseDialogController extends BaseController {
         }
     }
 
-    protected void setupDialogImage(ImageView imageView, String imagePath) {
+    protected void setupDialogImage(String imagePath) {
         try {
-            LoggerUtility.info("Setting up dialog image: " + imagePath);
-            if (imageView != null) {
+            if (dialogImage != null) {
                 Image image = baseDialogService.loadImage(imagePath);
                 if (image != null) {
-                    imageView.setImage(image);
-                    imageView.setFitWidth(100);  // Adjust as needed
-                    imageView.setFitHeight(100); // Adjust as needed
-                    imageView.setPreserveRatio(true);
+                    dialogImage.setImage(image);
+                    dialogImage.setFitWidth(100);  // Adjust as needed
+                    dialogImage.setFitHeight(100); // Adjust as needed
+                    dialogImage.setPreserveRatio(true);
+                    LoggerUtility.info("Dialog image set successfully: " + imagePath);
+                } else {
+                    LoggerUtility.error("Failed to load image: " + imagePath);
                 }
             } else {
-                LoggerUtility.error("ImageView is null when setting up dialog image");
+                LoggerUtility.error("DialogImage is null when setting up dialog image");
             }
         } catch (Exception e) {
             LoggerUtility.error("Error setting up dialog image: " + e.getMessage(), e);
@@ -88,6 +85,7 @@ public abstract class BaseDialogController extends BaseController {
         if (refreshButton != null) {
             refreshButton.setOnAction(e -> refreshContent());
             refreshButton.setTooltip(new Tooltip("Refresh"));
+            LoggerUtility.info("Refresh button set up successfully");
         } else {
             LoggerUtility.info("Refresh button not present in this dialog");
         }
@@ -95,10 +93,10 @@ public abstract class BaseDialogController extends BaseController {
 
     protected void setRefreshButtonImage(String imagePath) {
         if (refreshIcon != null) {
-            InputStream imageStream = getClass().getResourceAsStream(imagePath);
-            if (imageStream != null) {
-                Image refreshImage = new Image(imageStream);
+            Image refreshImage = baseDialogService.loadImage(imagePath);
+            if (refreshImage != null) {
                 refreshIcon.setImage(refreshImage);
+                LoggerUtility.info("Refresh icon set successfully");
             } else {
                 LoggerUtility.error("Failed to load refresh icon image");
             }
@@ -110,4 +108,13 @@ public abstract class BaseDialogController extends BaseController {
     protected abstract void refreshContent();
 
     protected abstract void loadDialogImage();
+
+    @Override
+    protected boolean requiresUserSession() {
+        return false; // Most dialogs don't require a user session, override if needed
+    }
+
+    public void dispose() {
+        // Clean up resources, unregister listeners, etc.
+    }
 }

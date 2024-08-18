@@ -13,18 +13,16 @@ public class UserBaseService {
         this.scheduleUserTable = scheduleUserTable;
     }
 
-    public WorkSessionState initializeWorkState(Integer userId) {
-        Date currentDate = new Date(System.currentTimeMillis());
-        WorkSessionState workSessionState = scheduleUserTable.getWorkSessionState(userId);
-
-        if (!workSessionState.isWorking() && scheduleUserTable.hasActiveSession(userId, currentDate)) {
-            LoggerUtility.info("Active session found for user " + userId + ". Resuming work state.");
-            workSessionState.setWorking(true);
-            workSessionState.setPaused(true);
-            scheduleUserTable.saveWorkSessionState(userId, workSessionState);
+    public WorkSessionState initializeWorkState(int userId) {
+        WorkSessionState state = scheduleUserTable.getWorkSessionState(userId);
+        if (state == null) {
+            LoggerUtility.info("No existing work session state found for user " + userId + ". Creating new state.");
+            state = new WorkSessionState();
+        } else {
+            LoggerUtility.info("Retrieved existing work session state for user " + userId +
+                    ": isWorking=" + state.isWorking() + ", isPaused=" + state.isPaused());
         }
-
-        return workSessionState;
+        return state;
     }
 
     public void saveWorkSessionState(Integer userId, WorkSessionState workSessionState) {

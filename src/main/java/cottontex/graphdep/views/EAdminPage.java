@@ -1,15 +1,15 @@
 package cottontex.graphdep.views;
 
-public class UserPage extends BasePage {
+public class EAdminPage extends EBasePage {
 
     @Override
     protected String getFxmlPath() {
-        return "UserPageLayout.fxml";
+        return "AdminPageLayout.fxml";
     }
 
     @Override
     protected String getTitle() {
-        return "User Page";
+        return "Admin Page";
     }
 
     public static void main(String[] args) {

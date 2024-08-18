@@ -6,9 +6,15 @@ import java.time.format.DateTimeFormatter;
 public final class DateTimeUtils {
 
     private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private static final DateTimeFormatter TIME_FORMATTER_NO_SECONDS = DateTimeFormatter.ofPattern("HH:mm");
 
     private DateTimeUtils() {
         // Private constructor to prevent instantiation
+    }
+
+    public static String formatTimeNoSeconds(LocalDateTime time) {
+        return time.format(TIME_FORMATTER_NO_SECONDS);
     }
 
     public static Integer calculateMinutes(String timeString) {
@@ -49,5 +55,9 @@ public final class DateTimeUtils {
         }
         // Simple round down to nearest hour
         return Integer.parseInt(parts[0]);
+    }
+
+    public static String formatTime(LocalDateTime time) {
+        return time.format(TIME_FORMATTER);
     }
 }

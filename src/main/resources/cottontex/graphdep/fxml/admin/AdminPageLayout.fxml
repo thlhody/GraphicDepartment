@@ -8,7 +8,7 @@
 <BorderPane prefHeight="600.0" prefWidth="800.0"
             xmlns="http://javafx.com/javafx/17.0.2-ea"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="cottontex.graphdep.controllers.admin.AdminController"
+            fx:controller="cottontex.graphdep.controllers.admin.EAdminController"
             stylesheets="@../../css/admin-styles.css, @../../css/header-styles.css">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20" />
@@ -21,7 +21,7 @@
                 <Region HBox.hgrow="ALWAYS" />
                 <Label fx:id="welcomeLabel" styleClass="welcome-label" />
                 <Button fx:id="userStatusButton" text="Users" onAction="#onUserStatusButtonClick" styleClass="nav-button"/>
-                <Button fx:id="viewReportsButton" text="View Reports" onAction="#viewReportsButton" styleClass="nav-button"/>
+                <Button fx:id="viewReportsButton" text="View Reports" onAction="#onViewReportsButtonClick" styleClass="nav-button"/>
                 <Button fx:id="settingsButton" text="Settings" onAction="#onSettingsButtonClick" styleClass="nav-button"/>
                 <Button fx:id="logoutButton" text="Logout" onAction="#onLogoutButtonClick" styleClass="nav-button"/>
             </HBox>
