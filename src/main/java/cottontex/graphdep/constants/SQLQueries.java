@@ -1,5 +1,10 @@
 package cottontex.graphdep.constants;
 
+import cottontex.graphdep.models.WorkSessionStateOffline;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class SQLQueries {
 
     // User-related handlers
@@ -42,6 +47,14 @@ public class SQLQueries {
                     "pause_timestamp = VALUES(pause_timestamp), " +
                     "session_state = VALUES(session_state), " +
                     "created_at = CURRENT_TIMESTAMP";
+
+
+    public static final String UPDATE_WORK_SESSION_STATE = "UPDATE work_session_state SET user_id = ?, is_working = ?, is_paused = ?, " +
+            "start_timestamp = ?, pause_timestamp = ?, session_state = ? WHERE id = ?";
+
+    public static final String INSERT_WORK_SESSION_STATE = "INSERT INTO work_session_state (user_id, is_working, is_paused, start_timestamp, pause_timestamp, session_state) " +
+            "VALUES (?, ?, ?, ?, ?, ?)";
+
 
     public static final String CLEAR_WORK_SESSION_STATE =
             "DELETE FROM work_session_state WHERE user_id = ?";
@@ -139,4 +152,25 @@ public class SQLQueries {
                     "WHERE t1.id > t2.id " +
                     "AND t1.user_id = t2.user_id " +
                     "AND t1.work_date = t2.work_date";
+
+    // New queries for HybridDatabaseConnection
+
+    public static final String GET_ALL_USERS = "SELECT user_id, name, employee_id, username, password, role FROM users";
+
+    public static final String INSERT_USER = "INSERT INTO users (name, employee_id, username, password, role) VALUES (?, ?, ?, ?, ?)";
+
+    public static final String UPDATE_USER = "UPDATE users SET name = ?, employee_id = ?, username = ?, password = ?, role = ? WHERE user_id = ?";
+
+    public static final String DELETE_USER_BY_ID = "DELETE FROM users WHERE user_id = ?";
+
+    // Sync queries
+    public static final String GET_LATEST_UPDATE_TIME = "SELECT MAX(last_updated) FROM users";
+
+    public static final String GET_UPDATED_USERS = "SELECT user_id, name, employee_id, username, password, role FROM users WHERE last_updated > ?";
+
+    public static final String UPDATE_SYNC_TIME = "UPDATE users SET last_updated = CURRENT_TIMESTAMP WHERE user_id = ?";
+
+    public static final String GET_NAME_BY_USERNAME = "SELECT name FROM users WHERE username = ?";
+
+
 }

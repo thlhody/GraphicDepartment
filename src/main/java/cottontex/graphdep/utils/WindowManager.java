@@ -1,7 +1,6 @@
-package cottontex.graphdep.windowmanagement;
+package cottontex.graphdep.utils;
 
 import cottontex.graphdep.controllers.common.EBaseController;
-import cottontex.graphdep.utils.LoggerUtility;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;

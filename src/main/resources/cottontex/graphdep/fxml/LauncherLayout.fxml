@@ -17,6 +17,8 @@
                 <ImageView fx:id="logoImage" styleClass="logo-image"/>
                 <Label styleClass="dashboard-title" text="Creative Time And Task Tracker" />
                 <Region HBox.hgrow="ALWAYS" />
+                <ProgressIndicator fx:id="syncProgressIndicator" visible="false" />
+                <Label fx:id="onlineStatusLabel" styleClass="online-status-label" />
                 <Button fx:id="aboutButton" text="About" onAction="#onAboutButtonClick" styleClass="nav-button"/>
             </HBox>
             <VBox alignment="CENTER" spacing="20.0">

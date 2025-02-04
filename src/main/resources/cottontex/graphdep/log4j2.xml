@@ -9,5 +9,7 @@
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>
+        <!-- Suppress HikariCP logging -->
+        <Logger name="com.zaxxer.hikari" level="OFF"/>
     </Loggers>
 </Configuration>

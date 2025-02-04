@@ -6,32 +6,43 @@ import cottontex.graphdep.controllers.info.EAboutDialogController;
 import cottontex.graphdep.database.interfaces.IUserLogin;
 import cottontex.graphdep.models.UserSession;
 import cottontex.graphdep.models.managers.EUserSessionManager;
+import cottontex.graphdep.services.SyncService;
 import cottontex.graphdep.utils.LoggerUtility;
-import cottontex.graphdep.windowmanagement.WindowManager;
+import cottontex.graphdep.utils.WindowManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 public class ELauncherController extends EBaseController {
 
     private IUserLogin userLogin;
+    private SyncService syncService;
 
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private Button aboutButton;
+    @FXML private Button loginButton;
+    @FXML private Label onlineStatusLabel;
+    @FXML private ProgressIndicator syncProgressIndicator;
 
     @Override
     protected void initializeDependencies() {
-        this.userLogin = getDependency(IUserLogin.class);
-        LoggerUtility.info("UserLogin dependency initialized successfully");
+        try {
+            this.userLogin = getDependency(IUserLogin.class);
+            this.syncService = getDependency(SyncService.class);
+            LoggerUtility.info("UserLogin and SyncService dependencies initialized successfully");
+        } catch (IllegalArgumentException e) {
+            LoggerUtility.error("Failed to initialize dependencies", e);
+            showAlert("Initialization Error", "Failed to initialize application dependencies. Please restart the application.");
+        }
     }
 
     @Override
@@ -44,8 +55,46 @@ public class ELauncherController extends EBaseController {
     protected void initializeComponents() {
         setupLogo();
         setupMainImage();
+        initializeSync();
     }
 
+    private void initializeSync() {
+        if (syncService == null) {
+            LoggerUtility.info("SyncService is not available. Application will operate in offline mode.");
+            updateOnlineStatus(false);
+            showAlert("Sync Error", "Unable to start synchronization. Some features may be unavailable.");
+            return;
+        }
+
+        loginButton.setDisable(true);
+        syncProgressIndicator.setVisible(true);
+
+        CompletableFuture.supplyAsync(() -> {
+            LoggerUtility.info("Starting synchronization");
+            syncService.startAutoSync();
+            return syncService.isOnline();
+        }).thenAccept(isOnline -> {
+            Platform.runLater(() -> {
+                loginButton.setDisable(false);
+                syncProgressIndicator.setVisible(false);
+                updateOnlineStatus(isOnline);
+                if (!isOnline) {
+                    LoggerUtility.info("Offline Mode: The application is currently offline. Local data will be used.");
+                    //showAlert("Offline Mode", "The application is currently offline. Local data will be used.");
+                }
+            });
+        }).exceptionally(e -> {
+            LoggerUtility.info("Unexpected error during synchronization. Operating in offline mode.");
+            Platform.runLater(() -> {
+                loginButton.setDisable(false);
+                syncProgressIndicator.setVisible(false);
+                updateOnlineStatus(false);
+                LoggerUtility.info("Offline Mode: An error occurred. The application will operate in offline mode.");
+                //showAlert("Offline Mode", "An error occurred. The application will operate in offline mode.");
+            });
+            return null;
+        });
+    }
     @Override
     protected boolean requiresUserSession() {
         return false; // LauncherController doesn't require a user session initially
@@ -66,7 +115,7 @@ public class ELauncherController extends EBaseController {
         LoggerUtility.info("User authenticated successfully: " + username + ", Role: " + role);
         Integer userId = userLogin.getUserID(username);
         Integer employeeId = userLogin.getEmployeeId(username);
-        String name = userLogin.getName(userId);
+        String name = userLogin.getName(username);
 
         if (userId == null) {
             LoggerUtility.error("Failed to retrieve user ID for: " + username);
@@ -158,6 +207,12 @@ public class ELauncherController extends EBaseController {
         } catch (IOException e) {
             LoggerUtility.error("Error loading About dialog", e);
             showAlert("Error", "Failed to load About dialog.");
+        }
+    }
+    private void updateOnlineStatus(boolean isOnline) {
+        if (onlineStatusLabel != null) {
+            onlineStatusLabel.setText(isOnline ? "Online" : "Offline");
+            onlineStatusLabel.setStyle(isOnline ? "-fx-text-fill: green;" : "-fx-text-fill: red;");
         }
     }
 }

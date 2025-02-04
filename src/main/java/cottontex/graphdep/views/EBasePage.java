@@ -1,7 +1,7 @@
 package cottontex.graphdep.views;
 
 import cottontex.graphdep.utils.LoggerUtility;
-import cottontex.graphdep.windowmanagement.WindowManager;
+import cottontex.graphdep.utils.WindowManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

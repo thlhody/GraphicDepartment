@@ -34,6 +34,17 @@
             <version>3.1.9</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.13.4</version> <!-- Use the same version as your other Jackson dependencies -->
+        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>

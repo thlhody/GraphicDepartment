@@ -105,18 +105,6 @@ public class EUserStatusDialogController extends EBaseDialogController {
                 ));
     }
 
-//    private void loadUserStatuses() {
-//        Platform.runLater(() -> {
-//            try {
-//                List<UserStatus> userStatuses = userStatusDialogService.fetchUserStatuses();
-//                updateUserStatusList(userStatuses);
-//            } catch (Exception e) {
-//                LoggerUtility.error("Error fetching user statuses", e);
-//                showAlert("Error", "Failed to load user statuses. Please try again.");
-//            }
-//        });
-//    }
-
     @Override
     public void setDialogStage(Stage dialogStage) {
         super.setDialogStage(dialogStage);
@@ -148,58 +136,4 @@ public class EUserStatusDialogController extends EBaseDialogController {
         }
         LoggerUtility.info("Updated user status list with " + userStatusList.size() + " entries");
     }
-
-//    @Override
-//    public void setDialogStage(Stage dialogStage) {
-//        super.setDialogStage(dialogStage);
-//
-//        DialogUtils.setupDynamicSizeDialog(dialogStage, statusScrollPane, userStatusBox,
-//                DIALOG_MIN_WIDTH, DIALOG_MAX_WIDTH,
-//                DIALOG_MIN_HEIGHT, DIALOG_MAX_HEIGHT);
-//
-//        dialogStage.setTitle("User Status");
-//
-//        Scene scene = dialogStage.getScene();
-//        if (scene != null) {
-//            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource(AppPathsCSS.USER_STATUS_DIALOG)).toExternalForm());
-//        } else {
-//            LoggerUtility.error("Scene is null when setting dialog stage");
-//        }
-//
-//        // Load user statuses after setting up the dialog
-//        loadUserStatuses();
-//    }
-//    private double calculateContentWidth() {
-//        return userStatusBox.getChildren().stream()
-//                .mapToDouble(node -> node.getBoundsInParent().getWidth())
-//                .max()
-//                .orElse(DIALOG_MIN_WIDTH);
-//    }
-//
-//    private double calculateContentHeight() {
-//        return userStatusBox.getChildren().stream()
-//                .mapToDouble(node -> node.getBoundsInParent().getHeight())
-//                .sum();
-//    }
-
-//    private void updateUserStatusList(List<UserStatus> userStatuses) {
-//        DialogUtils.updateContentAndResize(
-//                dialogStage,
-//                this::calculateContentWidth,
-//                this::calculateContentHeight,
-//                () -> {
-//                    userStatusBox.getChildren().clear();
-//                    for (UserStatus status : userStatuses) {
-//                        HBox userRow = UserStatusDialogService.createUserStatusRow(status);
-//                        userStatusBox.getChildren().add(userRow);
-//                    }
-//                    LoggerUtility.info("Updated user status list with " + userStatuses.size() + " entries");
-//                },
-//                DIALOG_MIN_WIDTH,
-//                DIALOG_MAX_WIDTH,
-//                DIALOG_MIN_HEIGHT,
-//                DIALOG_MAX_HEIGHT,
-//                CONTENT_PADDING
-//        );
-//    }
 }

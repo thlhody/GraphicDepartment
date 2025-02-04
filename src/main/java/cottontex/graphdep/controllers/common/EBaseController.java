@@ -5,7 +5,7 @@ import cottontex.graphdep.models.UserSession;
 import cottontex.graphdep.models.managers.EUserSessionManager;
 import cottontex.graphdep.utils.DependencyFactory;
 import cottontex.graphdep.utils.LoggerUtility;
-import cottontex.graphdep.windowmanagement.WindowManager;
+import cottontex.graphdep.utils.WindowManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -231,10 +231,7 @@ public abstract class EBaseController {
         redirectToLogin();
     }
 
-    @FXML
-    protected void onBackButtonClick() {
-        // Implement back button logic
-    }
+
 
     protected Scene getCurrentScene() {
         if (logoutButton != null && logoutButton.getScene() != null) {

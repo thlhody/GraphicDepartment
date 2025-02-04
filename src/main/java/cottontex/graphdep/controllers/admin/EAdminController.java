@@ -42,15 +42,6 @@ public class EAdminController extends EAdminBaseController {
         super.initializeComponents();
     }
 
-//    @FXML
-//    protected void onUserStatusButtonClick() {
-//        LoggerUtility.buttonInfo("User Status", EUserSessionManager.getCurrentUsername());
-//        Stage dialogStage = createCustomDialog(EUserStatusDialogController.class);
-//        if (dialogStage != null) {
-//            dialogStage.showAndWait();
-//        }
-//    }
-
     @FXML
     protected void onUserStatusButtonClick() {
         LoggerUtility.buttonInfo("User Status", EUserSessionManager.getCurrentUsername());

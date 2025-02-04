@@ -1,5 +1,6 @@
 package cottontex.graphdep.database.handlers.user;
 
+import cottontex.graphdep.constants.TimeOffCodes;
 import cottontex.graphdep.database.interfaces.user.IUserTimeOffHandler;
 import cottontex.graphdep.utils.LoggerUtility;
 import cottontex.graphdep.constants.SQLQueries;
@@ -34,7 +35,7 @@ public class UserTimeOffHandler extends BaseDatabase implements IUserTimeOffHand
                 pstmt.setTimestamp(2, Timestamp.valueOf(date.atStartOfDay()));
                 pstmt.setTimestamp(3, Timestamp.valueOf(date.atTime(23, 59, 59)));
                 pstmt.setTime(4, Time.valueOf("00:00:00")); // Set total_worked_time to 0
-                pstmt.setString(5, type.startsWith("CO") ? "CO" : "CM");
+                pstmt.setString(5, type.startsWith(TimeOffCodes.TIME_OFF_CODE) ? TimeOffCodes.TIME_OFF_CODE : TimeOffCodes.MEDICAL_LEAVE_CODE);
 
                 pstmt.addBatch();
                 LoggerUtility.info("Added batch for date: " + date);
